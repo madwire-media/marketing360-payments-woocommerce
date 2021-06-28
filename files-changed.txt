@@ -1,0 +1,51 @@
+/includes/class-wc-stripe-api.php
+ - Set the level3 data to an empty array since we don't have it turned on $level3_data = [];
+    - public static function request_with_level3_data( $request, $api, $level3_data, $order )
+        $level3_data
+
+
+
+
+/assets/js/stripe.js Line 7 & /assets/js/stripe.min.js
+    - Added {stripeAccount:wc_stripe_params.account_id} as an argument when instantiating Stripe object
+
+
+
+
+We will have to put out our publishable key with the plugin, or come up with some way to get it.
+
+
+
+
+
+
+'client_id'               => array(
+    'title'       => __( 'Marketing 360® Payments Client ID', 'woocommerce-gateway-stripe' ),
+    'type'        => 'text',
+    'description' => __( 'Get your API Client ID from your Marketing 360 Payments account.', 'woocommerce-gateway-stripe' ),
+    'default'     => '',
+    'desc_tip'    => true,
+),
+'client_secret'                    => array(
+    'title'       => __( 'Marketing 360® Payments Client Secret', 'woocommerce-gateway-stripe' ),
+    'type'        => 'password',
+    'description' => __( 'Get your Client Secret from your Marketing 360 Payments account.', 'woocommerce-gateway-stripe' ),
+    'default'     => '',
+    'desc_tip'    => true,
+),
+
+
+
+Stripe webhooks (https://docs.woocommerce.com/document/stripe/?_ga=2.34083361.125245936.1530713549-854908926.1520265692)
+    source.chargeable
+    source.canceled
+    charge.succeeded
+    charge.failed
+    charge.captured
+    charge.dispute.created
+    charge.refunded
+    review.opened
+    review.closed
+    payment_intent.succeeded
+    payment_intent.payment_failed
+    payment_intent.amount_capturable_updated
