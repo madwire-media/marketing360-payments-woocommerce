@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Marketing 360® Payments
+ * Plugin Name: Marketing 360® Payments for WooCommerce
  * Plugin URI: https://marketing360.com/woocommerce-gateway-marketing-360-payments
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
