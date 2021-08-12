@@ -89,7 +89,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 			wcs_user_has_subscription( get_current_user_id(), '', $subs_statuses ) &&
 			is_add_payment_method_page()
 		) {
-			$label = esc_html( apply_filters( 'wc_stripe_save_to_subs_text', __( 'Update the Payment Method used for all of my active subscriptions.', 'woocommerce-gateway-marketing-360-payments' ) ) );
+			$label = esc_html( apply_filters( 'wc_stripe_save_to_subs_text', __( 'Update the Payment Method used for all of my active subscriptions.', 'marketing-360-payments-for-woocommerce' ) ) );
 			$id    = sprintf( 'wc-%1$s-update-subs-payment-method-card', $this->id );
 			woocommerce_form_field(
 				$id,
@@ -221,7 +221,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 		try {
 			if ( $amount * 100 < WC_Stripe_Helper::get_minimum_amount() ) {
 				/* translators: minimum amount */
-				$message = sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'woocommerce-gateway-marketing-360-payments' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) );
+				$message = sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'marketing-360-payments-for-woocommerce' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) );
 				throw new WC_Stripe_Exception(
 					'Error while processing renewal order ' . $renewal_order->get_id() . ' : ' . $message,
 					$message
@@ -274,7 +274,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 			if ( ! $prepared_source->customer ) {
 				throw new WC_Stripe_Exception(
 					'Failed to process renewal for order ' . $renewal_order->get_id() . '. Stripe customer id is missing in the order',
-					__( 'Customer not found', 'woocommerce-gateway-marketing-360-payments' )
+					__( 'Customer not found', 'marketing-360-payments-for-woocommerce' )
 				);
 			}
 
@@ -314,7 +314,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 
 						return $this->process_subscription_payment( $amount, $renewal_order, true, $response->error );
 					} else {
-						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'woocommerce-gateway-marketing-360-payments' );
+						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'marketing-360-payments-for-woocommerce' );
 						$renewal_order->add_order_note( $localized_message );
 						throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
 					}
@@ -338,7 +338,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 			if ( $is_authentication_required ) {
 				do_action( 'wc_gateway_stripe_process_payment_authentication_required', $renewal_order, $response );
 
-				$error_message = __( 'This transaction requires authentication.', 'woocommerce-gateway-marketing-360-payments' );
+				$error_message = __( 'This transaction requires authentication.', 'marketing-360-payments-for-woocommerce' );
 				$renewal_order->add_order_note( $error_message );
 
 				$charge = end( $response->error->payment_intent->charges->data );
@@ -346,7 +346,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 				$order_id = $renewal_order->get_id();
 
 				$renewal_order->set_transaction_id( $id );
-				$renewal_order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'woocommerce-gateway-marketing-360-payments' ), $id ) );
+				$renewal_order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'marketing-360-payments-for-woocommerce' ), $id ) );
 				if ( is_callable( array( $renewal_order, 'save' ) ) ) {
 					$renewal_order->save();
 				}
@@ -492,10 +492,10 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 
 				// Allow empty stripe customer id during subscription renewal. It will be added when processing payment if required.
 				if ( ! isset( $_POST['wc_order_action'] ) || 'wcs_process_renewal' !== $_POST['wc_order_action'] ) {
-					throw new Exception( __( 'A "Stripe Customer ID" value is required.', 'woocommerce-gateway-marketing-360-payments' ) );
+					throw new Exception( __( 'A "Stripe Customer ID" value is required.', 'marketing-360-payments-for-woocommerce' ) );
 				}
 			} elseif ( 0 !== strpos( $payment_meta['post_meta']['_stripe_customer_id']['value'], 'cus_' ) ) {
-				throw new Exception( __( 'Invalid customer ID. A valid "Stripe Customer ID" must begin with "cus_".', 'woocommerce-gateway-marketing-360-payments' ) );
+				throw new Exception( __( 'Invalid customer ID. A valid "Stripe Customer ID" must begin with "cus_".', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			if (
@@ -504,7 +504,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 				&& ( ! empty( $payment_meta['post_meta']['_stripe_source_id']['value'] )
 				&& 0 !== strpos( $payment_meta['post_meta']['_stripe_source_id']['value'], 'src_' ) ) ) {
 
-				throw new Exception( __( 'Invalid source ID. A valid source "Stripe Source ID" must begin with "src_" or "card_".', 'woocommerce-gateway-marketing-360-payments' ) );
+				throw new Exception( __( 'Invalid source ID. A valid source "Stripe Source ID" must begin with "src_" or "card_".', 'marketing-360-payments-for-woocommerce' ) );
 			}
 		}
 	}
@@ -570,7 +570,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 		$stripe_customer->set_id( $stripe_customer_id );
 
 		$sources                   = $stripe_customer->get_sources();
-		$payment_method_to_display = __( 'N/A', 'woocommerce-gateway-marketing-360-payments' );
+		$payment_method_to_display = __( 'N/A', 'marketing-360-payments-for-woocommerce' );
 
 		if ( $sources ) {
 			$card = false;
@@ -585,7 +585,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 				if ( $source->id === $stripe_source_id ) {
 					if ( $card ) {
 						/* translators: 1) card brand 2) last 4 digits */
-						$payment_method_to_display = sprintf( __( 'Via %1$s card ending in %2$s', 'woocommerce-gateway-marketing-360-payments' ), ( isset( $card->brand ) ? $card->brand : __( 'N/A', 'woocommerce-gateway-marketing-360-payments' ) ), $card->last4 );
+						$payment_method_to_display = sprintf( __( 'Via %1$s card ending in %2$s', 'marketing-360-payments-for-woocommerce' ), ( isset( $card->brand ) ? $card->brand : __( 'N/A', 'marketing-360-payments-for-woocommerce' ) ), $card->last4 );
 					}
 
 					break;
@@ -649,7 +649,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 		// Fail the payment attempt (order would be currently pending because of retry rules).
 		$charge    = end( $existing_intent->charges->data );
 		$charge_id = $charge->id;
-		$renewal_order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'woocommerce-gateway-marketing-360-payments' ), $charge_id ) );
+		$renewal_order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'marketing-360-payments-for-woocommerce' ), $charge_id ) );
 
 		return true;
 	}
@@ -682,7 +682,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 
 		if ( isset( $_GET['early_renewal'] ) ) { // wpcs: csrf ok.
 			wcs_update_dates_after_early_renewal( wcs_get_subscription( $order->get_meta( '_subscription_renewal' ) ), $order );
-			wc_add_notice( __( 'Your early renewal order was successful.', 'woocommerce-gateway-marketing-360-payments' ), 'success' );
+			wc_add_notice( __( 'Your early renewal order was successful.', 'marketing-360-payments-for-woocommerce' ), 'success' );
 		}
 	}
 
@@ -695,7 +695,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 	protected function handle_intent_verification_failure( $order, $intent ) {
 		if ( isset( $_GET['early_renewal'] ) ) {
 			$order->delete( true );
-			wc_add_notice( __( 'Payment authorization for the renewal order was unsuccessful, please try again.', 'woocommerce-gateway-marketing-360-payments' ), 'error' );
+			wc_add_notice( __( 'Payment authorization for the renewal order was unsuccessful, please try again.', 'marketing-360-payments-for-woocommerce' ), 'error' );
 			$renewal_url = wcs_get_early_renewal_url( wcs_get_subscription( $order->get_meta( '_subscription_renewal' ) ) );
 			wp_redirect( $renewal_url ); exit;
 		}

@@ -26,7 +26,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 				<label for="wc-%1$s-new-payment-method" style="display:inline;">%2$s</label>
 			</p>',
 			esc_attr( $this->id ),
-			esc_html( apply_filters( 'wc_stripe_save_to_account_text', __( 'Save payment information to my account for future purchases.', 'woocommerce-gateway-marketing-360-payments' ) ) )
+			esc_html( apply_filters( 'wc_stripe_save_to_account_text', __( 'Save payment information to my account for future purchases.', 'marketing-360-payments-for-woocommerce' ) ) )
 		);
 	}
 
@@ -220,7 +220,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	public function validate_minimum_order_amount( $order ) {
 		if ( $order->get_total() * 100 < WC_Stripe_Helper::get_minimum_amount() ) {
 			/* translators: 1) dollar amount */
-			throw new WC_Stripe_Exception( 'Did not meet minimum amount', sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'woocommerce-gateway-marketing-360-payments' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) ) );
+			throw new WC_Stripe_Exception( 'Did not meet minimum amount', sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'marketing-360-payments-for-woocommerce' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) ) );
 		}
 	}
 
@@ -312,7 +312,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		$post_data['currency'] = strtolower( $order->get_currency() );
 		$post_data['amount']   = WC_Stripe_Helper::get_stripe_amount( $order->get_total(), $post_data['currency'] );
 		/* translators: 1) blog name 2) order number */
-		$post_data['description'] = sprintf( __( '%1$s - Order %2$s', 'woocommerce-gateway-marketing-360-payments' ), wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ), $order->get_order_number() );
+		$post_data['description'] = sprintf( __( '%1$s - Order %2$s', 'marketing-360-payments-for-woocommerce' ), wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ), $order->get_order_number() );
 		$billing_email            = $order->get_billing_email();
 		$billing_first_name       = $order->get_billing_first_name();
 		$billing_last_name        = $order->get_billing_last_name();
@@ -339,8 +339,8 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		$post_data['expand[]'] = 'balance_transaction';
 
 		$metadata = array(
-			__( 'customer_name', 'woocommerce-gateway-marketing-360-payments' ) => sanitize_text_field( $billing_first_name ) . ' ' . sanitize_text_field( $billing_last_name ),
-			__( 'customer_email', 'woocommerce-gateway-marketing-360-payments' ) => sanitize_email( $billing_email ),
+			__( 'customer_name', 'marketing-360-payments-for-woocommerce' ) => sanitize_text_field( $billing_first_name ) . ' ' . sanitize_text_field( $billing_last_name ),
+			__( 'customer_email', 'marketing-360-payments-for-woocommerce' ) => sanitize_email( $billing_email ),
 			'order_id' => $order->get_order_number(),
 		);
 
@@ -403,19 +403,19 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 
 				$order->set_transaction_id( $response->id );
 				/* translators: transaction id */
-				$order->update_status( 'on-hold', sprintf( __( 'Marketing 360® Payments charge awaiting payment: %s.', 'woocommerce-gateway-marketing-360-payments' ), $response->id ) );
+				$order->update_status( 'on-hold', sprintf( __( 'Marketing 360® Payments charge awaiting payment: %s.', 'marketing-360-payments-for-woocommerce' ), $response->id ) );
 			}
 
 			if ( 'succeeded' === $response->status ) {
 				$order->payment_complete( $response->id );
 
 				/* translators: transaction id */
-				$message = sprintf( __( 'Marketing 360® Payments charge complete (Charge ID: %s)', 'woocommerce-gateway-marketing-360-payments' ), $response->id );
+				$message = sprintf( __( 'Marketing 360® Payments charge complete (Charge ID: %s)', 'marketing-360-payments-for-woocommerce' ), $response->id );
 				$order->add_order_note( $message );
 			}
 
 			if ( 'failed' === $response->status ) {
-				$localized_message = __( 'Payment processing failed. Please retry.', 'woocommerce-gateway-marketing-360-payments' );
+				$localized_message = __( 'Payment processing failed. Please retry.', 'marketing-360-payments-for-woocommerce' );
 				$order->add_order_note( $localized_message );
 				throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
 			}
@@ -427,7 +427,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			}
 
 			/* translators: transaction id */
-			$order->update_status( 'on-hold', sprintf( __( 'Marketing 360® Payments charge authorized (Charge ID: %s). Process order to take payment, or cancel to remove the pre-authorization.', 'woocommerce-gateway-marketing-360-payments' ), $response->id ) );
+			$order->update_status( 'on-hold', sprintf( __( 'Marketing 360® Payments charge authorized (Charge ID: %s). Process order to take payment, or cancel to remove the pre-authorization.', 'marketing-360-payments-for-woocommerce' ), $response->id ) );
 		}
 
 		if ( is_callable( array( $order, 'save' ) ) ) {
@@ -605,7 +605,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 
 			if ( ! $wc_token || $wc_token->get_user_id() !== get_current_user_id() ) {
 				WC()->session->set( 'refresh_totals', true );
-				throw new WC_Stripe_Exception( 'Invalid payment method', __( 'Invalid payment method. Please input a new card number.', 'woocommerce-gateway-marketing-360-payments' ) );
+				throw new WC_Stripe_Exception( 'Invalid payment method', __( 'Invalid payment method. Please input a new card number.', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			$source_id = $wc_token->get_token();
@@ -870,7 +870,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			}
 
 			/* translators: 1) dollar amount 2) transaction id 3) refund message */
-			$refund_message = ( isset( $captured ) && 'yes' === $captured ) ? sprintf( __( 'Refunded %1$s - Refund ID: %2$s - Reason: %3$s', 'woocommerce-gateway-marketing-360-payments' ), $amount, $response->id, $reason ) : __( 'Pre-Authorization Released', 'woocommerce-gateway-marketing-360-payments' );
+			$refund_message = ( isset( $captured ) && 'yes' === $captured ) ? sprintf( __( 'Refunded %1$s - Refund ID: %2$s - Reason: %3$s', 'marketing-360-payments-for-woocommerce' ), $amount, $response->id, $reason ) : __( 'Pre-Authorization Released', 'marketing-360-payments-for-woocommerce' );
 
 			$order->add_order_note( $refund_message );
 			WC_Stripe_Logger::log( 'Success: ' . html_entity_decode( wp_strip_all_tags( $refund_message ) ) );
@@ -888,7 +888,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function add_payment_method() {
 		$error     = false;
-		$error_msg = __( 'There was a problem adding the payment method.', 'woocommerce-gateway-marketing-360-payments' );
+		$error_msg = __( 'There was a problem adding the payment method.', 'marketing-360-payments-for-woocommerce' );
 		$source_id = '';
 
 		if ( empty( $_POST['stripe_source'] ) && empty( $_POST['stripe_token'] ) || ! is_user_logged_in() ) {

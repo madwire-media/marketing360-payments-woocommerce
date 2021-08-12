@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WC_Stripe_Logger {
 
 	public static $logger;
-	const WC_LOG_FILENAME = 'woocommerce-gateway-marketing-360-payments';
+	const WC_LOG_FILENAME = 'marketing-360-payments-for-woocommerce';
 
 	/**
 	 * Utilize WC logger class

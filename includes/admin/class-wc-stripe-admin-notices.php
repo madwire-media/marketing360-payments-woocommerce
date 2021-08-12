@@ -116,7 +116,7 @@ class WC_Stripe_Admin_Notices {
 			if ( empty( $show_phpver_notice ) ) {
 				if ( version_compare( phpversion(), WC_M360_PAYMENTS_MIN_PHP_VER, '<' ) ) {
 					/* translators: 1) int version 2) int version */
-					$message = __( 'WooCommerce Marketing 360® Payments - The minimum PHP version required for this plugin is %1$s. You are running %2$s.', 'woocommerce-gateway-marketing-360-payments' );
+					$message = __( 'WooCommerce Marketing 360® Payments - The minimum PHP version required for this plugin is %1$s. You are running %2$s.', 'marketing-360-payments-for-woocommerce' );
 
 					$this->add_admin_notice( 'phpver', 'error', sprintf( $message, WC_M360_PAYMENTS_MIN_PHP_VER, phpversion() ), true );
 
@@ -127,14 +127,14 @@ class WC_Stripe_Admin_Notices {
 			if ( empty( $show_wcver_notice ) ) {
 				if ( WC_Stripe_Helper::is_wc_lt( WC_M360_PAYMENTS_FUTURE_MIN_WC_VER ) ) {
 					/* translators: 1) int version 2) int version */
-					$message = __( 'WooCommerce Marketing 360® Payments - This is the last version of the plugin compatible with WooCommerce %1$s. All furture versions of the plugin will require WooCommerce %2$s or greater.', 'woocommerce-gateway-marketing-360-payments' );
+					$message = __( 'WooCommerce Marketing 360® Payments - This is the last version of the plugin compatible with WooCommerce %1$s. All furture versions of the plugin will require WooCommerce %2$s or greater.', 'marketing-360-payments-for-woocommerce' );
 					$this->add_admin_notice( 'wcver', 'notice notice-warning', sprintf( $message, WC_VERSION, WC_M360_PAYMENTS_FUTURE_MIN_WC_VER ), true );
 				}
 			}
 
 			if ( empty( $show_curl_notice ) ) {
 				if ( ! function_exists( 'curl_init' ) ) {
-					$this->add_admin_notice( 'curl', 'notice notice-warning', __( 'WooCommerce Marketing 360® Payments - cURL is not installed.', 'woocommerce-gateway-marketing-360-payments' ), true );
+					$this->add_admin_notice( 'curl', 'notice notice-warning', __( 'WooCommerce Marketing 360® Payments - cURL is not installed.', 'marketing-360-payments-for-woocommerce' ), true );
 				}
 			}
 
@@ -142,12 +142,12 @@ class WC_Stripe_Admin_Notices {
 				// Show message if enabled and FORCE SSL is disabled and WordpressHTTPS plugin is not detected.
 				if ( ! wc_checkout_is_https() ) {
 					/* translators: 1) link */
-					$this->add_admin_notice( 'ssl', 'notice notice-warning', sprintf( __( 'Marketing 360® Payments is enabled, but a SSL certificate is not detected. Your checkout may not be secure! Please ensure your server has a valid <a href="%1$s" target="_blank">SSL certificate</a>', 'woocommerce-gateway-marketing-360-payments' ), 'https://en.wikipedia.org/wiki/Transport_Layer_Security' ), true );
+					$this->add_admin_notice( 'ssl', 'notice notice-warning', sprintf( __( 'Marketing 360® Payments is enabled, but a SSL certificate is not detected. Your checkout may not be secure! Please ensure your server has a valid <a href="%1$s" target="_blank">SSL certificate</a>', 'marketing-360-payments-for-woocommerce' ), 'https://en.wikipedia.org/wiki/Transport_Layer_Security' ), true );
 				}
 			}
 
 			if ( empty( $show_sca_notice ) ) {
-				$this->add_admin_notice( 'sca', 'notice notice-success', sprintf( __( 'Marketing 360® Payments is now ready for Strong Customer Authentication (SCA) and 3D Secure 2! <a href="%1$s" target="_blank">Read about SCA</a>', 'woocommerce-gateway-marketing-360-payments' ), 'https://woocommerce.com/posts/introducing-strong-customer-authentication-sca/' ), true );
+				$this->add_admin_notice( 'sca', 'notice notice-success', sprintf( __( 'Marketing 360® Payments is now ready for Strong Customer Authentication (SCA) and 3D Secure 2! <a href="%1$s" target="_blank">Read about SCA</a>', 'marketing-360-payments-for-woocommerce' ), 'https://woocommerce.com/posts/introducing-strong-customer-authentication-sca/' ), true );
 			}
 		}
 	}
@@ -170,7 +170,7 @@ class WC_Stripe_Admin_Notices {
 
 			if ( ! in_array( get_woocommerce_currency(), $gateway->get_supported_currency() ) ) {
 				/* translators: %1$s Payment method, %2$s List of supported currencies */
-				$this->add_admin_notice( $method, 'notice notice-error', sprintf( __( '%1$s is enabled - it requires store currency to be set to %2$s', 'woocommerce-gateway-marketing-360-payments' ), $method, implode( ', ', $gateway->get_supported_currency() ) ), true );
+				$this->add_admin_notice( $method, 'notice notice-error', sprintf( __( '%1$s is enabled - it requires store currency to be set to %2$s', 'marketing-360-payments-for-woocommerce' ), $method, implode( ', ', $gateway->get_supported_currency() ) ), true );
 			}
 		}
 	}
@@ -184,11 +184,11 @@ class WC_Stripe_Admin_Notices {
 	public function hide_notices() {
 		if ( isset( $_GET['wc-stripe-hide-notice'] ) && isset( $_GET['_wc_stripe_notice_nonce'] ) ) {
 			if ( ! wp_verify_nonce( $_GET['_wc_stripe_notice_nonce'], 'wc_stripe_hide_notices_nonce' ) ) {
-				wp_die( __( 'Action failed. Please refresh the page and retry.', 'woocommerce-gateway-marketing-360-payments' ) );
+				wp_die( __( 'Action failed. Please refresh the page and retry.', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				wp_die( __( 'Cheatin&#8217; huh?', 'woocommerce-gateway-marketing-360-payments' ) );
+				wp_die( __( 'Cheatin&#8217; huh?', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			$notice = wc_clean( $_GET['wc-stripe-hide-notice'] );

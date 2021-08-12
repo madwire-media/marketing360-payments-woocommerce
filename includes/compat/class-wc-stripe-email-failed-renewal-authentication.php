@@ -16,8 +16,8 @@ class WC_Stripe_Email_Failed_Renewal_Authentication extends WC_Stripe_Email_Fail
 	 */
 	public function __construct( $email_classes = array() ) {
 		$this->id             = 'failed_renewal_authentication';
-		$this->title          = __( 'Failed Subscription Renewal SCA Authentication', 'woocommerce-gateway-marketing-360-payments' );
-		$this->description    = __( 'Sent to a customer when a renewal fails because the transaction requires an SCA verification. The email contains renewal order information and payment links.', 'woocommerce-gateway-marketing-360-payments' );
+		$this->title          = __( 'Failed Subscription Renewal SCA Authentication', 'marketing-360-payments-for-woocommerce' );
+		$this->description    = __( 'Sent to a customer when a renewal fails because the transaction requires an SCA verification. The email contains renewal order information and payment links.', 'marketing-360-payments-for-woocommerce' );
 		$this->customer_email = true;
 
 		$this->template_html  = 'emails/failed-renewal-authentication.php';
@@ -64,7 +64,7 @@ class WC_Stripe_Email_Failed_Renewal_Authentication extends WC_Stripe_Email_Fail
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( 'Payment authorization needed for renewal of {site_title} order {order_number}', 'woocommerce-gateway-marketing-360-payments' );
+		return __( 'Payment authorization needed for renewal of {site_title} order {order_number}', 'marketing-360-payments-for-woocommerce' );
 	}
 
 	/**
@@ -73,7 +73,7 @@ class WC_Stripe_Email_Failed_Renewal_Authentication extends WC_Stripe_Email_Fail
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'Payment authorization needed for renewal of order {order_number}', 'woocommerce-gateway-marketing-360-payments' );
+		return __( 'Payment authorization needed for renewal of order {order_number}', 'marketing-360-payments-for-woocommerce' );
 	}
 
 	/**

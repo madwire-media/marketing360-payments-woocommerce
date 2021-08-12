@@ -81,9 +81,9 @@ abstract class WC_Stripe_Email_Failed_Authentication extends WC_Email {
 
 		$this->form_fields = array(
 			'enabled'    => array(
-				'title'   => _x( 'Enable/Disable', 'an email notification', 'woocommerce-gateway-marketing-360-payments' ),
+				'title'   => _x( 'Enable/Disable', 'an email notification', 'marketing-360-payments-for-woocommerce' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable this email notification', 'woocommerce-gateway-marketing-360-payments' ),
+				'label'   => __( 'Enable this email notification', 'marketing-360-payments-for-woocommerce' ),
 				'default' => 'yes',
 			),
 

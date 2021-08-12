@@ -9,18 +9,18 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 	 *
 	 */
 	public function __construct() {
-		parent::__construct( __( 'Stripe', 'woocommerce-gateway-marketing-360-payments' ) );
+		parent::__construct( __( 'Stripe', 'marketing-360-payments-for-woocommerce' ) );
 
-		$this->add_exporter( 'woocommerce-gateway-marketing-360-payments-order-data', __( 'WooCommerce Stripe Order Data', 'woocommerce-gateway-marketing-360-payments' ), array( $this, 'order_data_exporter' ) );
+		$this->add_exporter( 'marketing-360-payments-for-woocommerce-order-data', __( 'WooCommerce Stripe Order Data', 'marketing-360-payments-for-woocommerce' ), array( $this, 'order_data_exporter' ) );
 
 		if ( function_exists( 'wcs_get_subscriptions' ) ) {
-			$this->add_exporter( 'woocommerce-gateway-marketing-360-payments-subscriptions-data', __( 'WooCommerce Stripe Subscriptions Data', 'woocommerce-gateway-marketing-360-payments' ), array( $this, 'subscriptions_data_exporter' ) );
+			$this->add_exporter( 'marketing-360-payments-for-woocommerce-subscriptions-data', __( 'WooCommerce Stripe Subscriptions Data', 'marketing-360-payments-for-woocommerce' ), array( $this, 'subscriptions_data_exporter' ) );
 		}
 
-		$this->add_exporter( 'woocommerce-gateway-marketing-360-payments-customer-data', __( 'WooCommerce Stripe Customer Data', 'woocommerce-gateway-marketing-360-payments' ), array( $this, 'customer_data_exporter' ) );
+		$this->add_exporter( 'marketing-360-payments-for-woocommerce-customer-data', __( 'WooCommerce Stripe Customer Data', 'marketing-360-payments-for-woocommerce' ), array( $this, 'customer_data_exporter' ) );
 
-		$this->add_eraser( 'woocommerce-gateway-marketing-360-payments-customer-data', __( 'WooCommerce Stripe Customer Data', 'woocommerce-gateway-marketing-360-payments' ), array( $this, 'customer_data_eraser' ) );
-		$this->add_eraser( 'woocommerce-gateway-marketing-360-payments-order-data', __( 'WooCommerce Stripe Data', 'woocommerce-gateway-marketing-360-payments' ), array( $this, 'order_data_eraser' ) );
+		$this->add_eraser( 'marketing-360-payments-for-woocommerce-customer-data', __( 'WooCommerce Stripe Customer Data', 'marketing-360-payments-for-woocommerce' ), array( $this, 'customer_data_eraser' ) );
+		$this->add_eraser( 'marketing-360-payments-for-woocommerce-order-data', __( 'WooCommerce Stripe Data', 'marketing-360-payments-for-woocommerce' ), array( $this, 'order_data_eraser' ) );
 
 		add_filter( 'woocommerce_get_settings_account', array( $this, 'account_settings' ) );
 	}
@@ -34,11 +34,11 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 	public function account_settings( $settings ) {
 		$insert_setting = array(
 			array(
-				'title'       => __( 'Retain Stripe Data', 'woocommerce-gateway-marketing-360-payments' ),
-				'desc_tip'    => __( 'Retains any Stripe data such as Stripe customer ID, source ID.', 'woocommerce-gateway-marketing-360-payments' ),
+				'title'       => __( 'Retain Stripe Data', 'marketing-360-payments-for-woocommerce' ),
+				'desc_tip'    => __( 'Retains any Stripe data such as Stripe customer ID, source ID.', 'marketing-360-payments-for-woocommerce' ),
 				'id'          => 'woocommerce_gateway_stripe_retention',
 				'type'        => 'relative_date_selector',
-				'placeholder' => __( 'N/A', 'woocommerce-gateway-marketing-360-payments' ),
+				'placeholder' => __( 'N/A', 'marketing-360-payments-for-woocommerce' ),
 				'default'     => '',
 				'autoload'    => false,
 			),
@@ -92,7 +92,7 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 	 */
 	public function get_privacy_message() {
 		/* translators: %s URL to docs */
-		return wpautop( sprintf( __( 'By using this extension, you may be storing personal data or sharing data with an external service. <a href="%s" target="_blank">Learn more about how this works, including what you may want to include in your privacy policy.</a>', 'woocommerce-gateway-marketing-360-payments' ), 'https://docs.woocommerce.com/document/privacy-payments/#woocommerce-gateway-marketing-360-payments' ) );
+		return wpautop( sprintf( __( 'By using this extension, you may be storing personal data or sharing data with an external service. <a href="%s" target="_blank">Learn more about how this works, including what you may want to include in your privacy policy.</a>', 'marketing-360-payments-for-woocommerce' ), 'https://docs.woocommerce.com/document/privacy-payments/#marketing-360-payments-for-woocommerce' ) );
 	}
 
 	/**
@@ -115,15 +115,15 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 			foreach ( $orders as $order ) {
 				$data_to_export[] = array(
 					'group_id'    => 'woocommerce_orders',
-					'group_label' => __( 'Orders', 'woocommerce-gateway-marketing-360-payments' ),
+					'group_label' => __( 'Orders', 'marketing-360-payments-for-woocommerce' ),
 					'item_id'     => 'order-' . $order->get_id(),
 					'data'        => array(
 						array(
-							'name'  => __( 'Stripe payment id', 'woocommerce-gateway-marketing-360-payments' ),
+							'name'  => __( 'Stripe payment id', 'marketing-360-payments-for-woocommerce' ),
 							'value' => get_post_meta( $order->get_id(), '_stripe_source_id', true ),
 						),
 						array(
-							'name'  => __( 'Stripe customer id', 'woocommerce-gateway-marketing-360-payments' ),
+							'name'  => __( 'Stripe customer id', 'marketing-360-payments-for-woocommerce' ),
 							'value' => get_post_meta( $order->get_id(), '_stripe_customer_id', true ),
 						),
 					),
@@ -180,15 +180,15 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 			foreach ( $subscriptions as $subscription ) {
 				$data_to_export[] = array(
 					'group_id'    => 'woocommerce_subscriptions',
-					'group_label' => __( 'Subscriptions', 'woocommerce-gateway-marketing-360-payments' ),
+					'group_label' => __( 'Subscriptions', 'marketing-360-payments-for-woocommerce' ),
 					'item_id'     => 'subscription-' . $subscription->get_id(),
 					'data'        => array(
 						array(
-							'name'  => __( 'Stripe payment id', 'woocommerce-gateway-marketing-360-payments' ),
+							'name'  => __( 'Stripe payment id', 'marketing-360-payments-for-woocommerce' ),
 							'value' => get_post_meta( $subscription->get_id(), '_stripe_source_id', true ),
 						),
 						array(
-							'name'  => __( 'Stripe customer id', 'woocommerce-gateway-marketing-360-payments' ),
+							'name'  => __( 'Stripe customer id', 'marketing-360-payments-for-woocommerce' ),
 							'value' => get_post_meta( $subscription->get_id(), '_stripe_customer_id', true ),
 						),
 					),
@@ -220,15 +220,15 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 
 			$data_to_export[] = array(
 				'group_id'    => 'woocommerce_customer',
-				'group_label' => __( 'Customer Data', 'woocommerce-gateway-marketing-360-payments' ),
+				'group_label' => __( 'Customer Data', 'marketing-360-payments-for-woocommerce' ),
 				'item_id'     => 'user',
 				'data'        => array(
 					array(
-						'name'  => __( 'Stripe payment id', 'woocommerce-gateway-marketing-360-payments' ),
+						'name'  => __( 'Stripe payment id', 'marketing-360-payments-for-woocommerce' ),
 						'value' => get_user_option( '_stripe_source_id', $user->ID ),
 					),
 					array(
-						'name'  => __( 'Stripe customer id', 'woocommerce-gateway-marketing-360-payments' ),
+						'name'  => __( 'Stripe customer id', 'marketing-360-payments-for-woocommerce' ),
 						'value' => $stripe_user->get_id(),
 					),
 				),
@@ -266,7 +266,7 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 			$items_removed = true;
 			delete_user_option( $user->ID, '_stripe_customer_id' );
 			delete_user_option( $user->ID, '_stripe_source_id' );
-			$messages[] = __( 'Stripe User Data Erased.', 'woocommerce-gateway-marketing-360-payments' );
+			$messages[] = __( 'Stripe User Data Erased.', 'marketing-360-payments-for-woocommerce' );
 		}
 
 		return array(
@@ -342,12 +342,12 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 
 		if ( ! $this->is_retention_expired( $order->get_date_created()->getTimestamp() ) ) {
 			/* translators: %d Order ID */
-			return array( false, true, array( sprintf( __( 'Order ID %d is less than set retention days. Personal data retained. (Stripe)', 'woocommerce-gateway-marketing-360-payments' ), $order->get_id() ) ) );
+			return array( false, true, array( sprintf( __( 'Order ID %d is less than set retention days. Personal data retained. (Stripe)', 'marketing-360-payments-for-woocommerce' ), $order->get_id() ) ) );
 		}
 
 		if ( $subscription->has_status( apply_filters( 'wc_stripe_privacy_eraser_subs_statuses', array( 'on-hold', 'active' ) ) ) ) {
 			/* translators: %d Order ID */
-			return array( false, true, array( sprintf( __( 'Order ID %d contains an active Subscription. Personal data retained. (Stripe)', 'woocommerce-gateway-marketing-360-payments' ), $order->get_id() ) ) );
+			return array( false, true, array( sprintf( __( 'Order ID %d contains an active Subscription. Personal data retained. (Stripe)', 'marketing-360-payments-for-woocommerce' ), $order->get_id() ) ) );
 		}
 
 		$renewal_orders = WC_Subscriptions_Renewal_Order::get_renewal_orders( $order->get_id() );
@@ -362,7 +362,7 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 		delete_post_meta( $subscription_id, '_stripe_refund_id' );
 		delete_post_meta( $subscription_id, '_stripe_customer_id' );
 
-		return array( true, false, array( __( 'Stripe Subscription Data Erased.', 'woocommerce-gateway-marketing-360-payments' ) ) );
+		return array( true, false, array( __( 'Stripe Subscription Data Erased.', 'marketing-360-payments-for-woocommerce' ) ) );
 	}
 
 	/**
@@ -379,7 +379,7 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 
 		if ( ! $this->is_retention_expired( $order->get_date_created()->getTimestamp() ) ) {
 			/* translators: %d Order ID */
-			return array( false, true, array( sprintf( __( 'Order ID %d is less than set retention days. Personal data retained. (Stripe)', 'woocommerce-gateway-marketing-360-payments' ), $order->get_id() ) ) );
+			return array( false, true, array( sprintf( __( 'Order ID %d is less than set retention days. Personal data retained. (Stripe)', 'marketing-360-payments-for-woocommerce' ), $order->get_id() ) ) );
 		}
 
 		if ( empty( $stripe_source_id ) && empty( $stripe_refund_id ) && empty( $stripe_customer_id ) ) {
@@ -390,7 +390,7 @@ class WC_Stripe_Privacy extends WC_Abstract_Privacy {
 		delete_post_meta( $order_id, '_stripe_refund_id' );
 		delete_post_meta( $order_id, '_stripe_customer_id' );
 
-		return array( true, false, array( __( 'Stripe personal data erased.', 'woocommerce-gateway-marketing-360-payments' ) ) );
+		return array( true, false, array( __( 'Stripe personal data erased.', 'marketing-360-payments-for-woocommerce' ) ) );
 	}
 
 	/**

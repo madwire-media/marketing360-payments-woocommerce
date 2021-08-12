@@ -106,9 +106,9 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	public function __construct() {
 		$this->retry_interval = 1;
 		$this->id             = 'stripe';
-		$this->method_title   = __( 'Marketing 360® Payments', 'woocommerce-gateway-marketing-360-payments' );
+		$this->method_title   = __( 'Marketing 360® Payments', 'marketing-360-payments-for-woocommerce' );
 		/* translators: 1) link to Stripe register page 2) link to Stripe api keys page */
-		$this->method_description = sprintf( __( 'The Marketing 360 Payments® plugin for WooCommerce allows you to accept payments directly on your store for web and mobile. <a href="%1$s" target="_blank">Sign up</a> for a Marketing 360® account.', 'woocommerce-gateway-marketing-360-payments' ), 'https://marketing360.com' );
+		$this->method_description = sprintf( __( 'The Marketing 360 Payments® plugin for WooCommerce allows you to accept payments directly on your store for web and mobile. <a href="%1$s" target="_blank">Sign up</a> for a Marketing 360® account.', 'marketing-360-payments-for-woocommerce' ), 'https://marketing360.com' );
 		$this->has_fields         = true;
 		$this->supports           = array(
 			'products',
@@ -205,7 +205,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		}
 
 		/* translators: 1) Opening anchor tag 2) closing anchor tag */
-		wc_add_notice( sprintf( __( 'If your billing address has been changed for saved payment methods, be sure to remove any %1$ssaved payment methods%2$s on file and re-add them.', 'woocommerce-gateway-marketing-360-payments' ), '<a href="' . esc_url( wc_get_endpoint_url( 'payment-methods' ) ) . '" class="wc-stripe-update-card-notice" style="text-decoration:underline;">', '</a>' ), 'notice' );
+		wc_add_notice( sprintf( __( 'If your billing address has been changed for saved payment methods, be sure to remove any %1$ssaved payment methods%2$s on file and re-add them.', 'marketing-360-payments-for-woocommerce' ), '<a href="' . esc_url( wc_get_endpoint_url( 'payment-methods' ) ) . '" class="wc-stripe-update-card-notice" style="text-decoration:underline;">', '</a>' ), 'notice' );
 	}
 
 	/**
@@ -268,11 +268,11 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 					?>
 		            <div id="wc-m360-notice-box">
 		                <?php if ($details): ?>
-		                    <p><?php echo __("Currently connected to Marketing 360® account: {$details->externalAccountNumber} {$details->displayName}. <a href=\"#\" onclick=\"m360SignOut()\">Disconnect Account</a>", 'woocommerce-gateway-marketing-360-payments'); ?></p>
+		                    <p><?php echo __("Currently connected to Marketing 360® account: {$details->externalAccountNumber} {$details->displayName}. <a href=\"#\" onclick=\"m360SignOut()\">Disconnect Account</a>", 'marketing-360-payments-for-woocommerce'); ?></p>
 		                <?php endif; ?>
 		            </div>
 		            <button id="wc-m360-api-auth" class="button-secondary">
-		                <?php echo __($button_text, 'woocommerce-gateway-marketing-360-payments'); ?>
+		                <?php echo esc_html(__($button_text, 'marketing-360-payments-for-woocommerce')); ?>
 		            </button>
 		            <style>
 		                #wc-m360-notice-box p {
@@ -362,7 +362,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 			<?php if ( $this->inline_cc_form ) { ?>
 				<label for="card-element">
-					<?php esc_html_e( 'Credit or debit card', 'woocommerce-gateway-marketing-360-payments' ); ?>
+					<?php esc_html_e( 'Credit or debit card', 'marketing-360-payments-for-woocommerce' ); ?>
 				</label>
 
 				<div id="stripe-card-element" class="wc-stripe-elements-field">
@@ -370,7 +370,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 				</div>
 			<?php } else { ?>
 				<div class="form-row form-row-wide">
-					<label for="stripe-card-element"><?php esc_html_e( 'Card Number', 'woocommerce-gateway-marketing-360-payments' ); ?> <span class="required">*</span></label>
+					<label for="stripe-card-element"><?php esc_html_e( 'Card Number', 'marketing-360-payments-for-woocommerce' ); ?> <span class="required">*</span></label>
 					<div class="stripe-card-group">
 						<div id="stripe-card-element" class="wc-stripe-elements-field">
 						<!-- a Stripe Element will be inserted here. -->
@@ -381,7 +381,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 				</div>
 
 				<div class="form-row form-row-first">
-					<label for="stripe-exp-element"><?php esc_html_e( 'Expiry Date', 'woocommerce-gateway-marketing-360-payments' ); ?> <span class="required">*</span></label>
+					<label for="stripe-exp-element"><?php esc_html_e( 'Expiry Date', 'marketing-360-payments-for-woocommerce' ); ?> <span class="required">*</span></label>
 
 					<div id="stripe-exp-element" class="wc-stripe-elements-field">
 					<!-- a Stripe Element will be inserted here. -->
@@ -389,7 +389,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 				</div>
 
 				<div class="form-row form-row-last">
-					<label for="stripe-cvc-element"><?php esc_html_e( 'Card Code (CVC)', 'woocommerce-gateway-marketing-360-payments' ); ?> <span class="required">*</span></label>
+					<label for="stripe-cvc-element"><?php esc_html_e( 'Card Code (CVC)', 'marketing-360-payments-for-woocommerce' ); ?> <span class="required">*</span></label>
 				<div id="stripe-cvc-element" class="wc-stripe-elements-field">
 				<!-- a Stripe Element will be inserted here. -->
 				</div>
@@ -501,8 +501,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		$stripe_params = array(
 			'key'                  => $this->publishable_key,
 			'account_id'		   => $this->merchant_id,
-			'i18n_terms'           => __( 'Please accept the terms and conditions first', 'woocommerce-gateway-marketing-360-payments' ),
-			'i18n_required_fields' => __( 'Please fill in required checkout fields first', 'woocommerce-gateway-marketing-360-payments' ),
+			'i18n_terms'           => __( 'Please accept the terms and conditions first', 'marketing-360-payments-for-woocommerce' ),
+			'i18n_required_fields' => __( 'Please fill in required checkout fields first', 'marketing-360-payments-for-woocommerce' ),
 		);
 
 		// If we're on the pay page we need to pass stripe.js the address of the order.
@@ -531,10 +531,10 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 			)
 		);
 
-		$stripe_params['no_prepaid_card_msg']       = __( 'Sorry, we\'re not accepting prepaid cards at this time. Your credit card has not been charged. Please try with alternative payment method.', 'woocommerce-gateway-marketing-360-payments' );
-		$stripe_params['no_sepa_owner_msg']         = __( 'Please enter your IBAN account name.', 'woocommerce-gateway-marketing-360-payments' );
-		$stripe_params['no_sepa_iban_msg']          = __( 'Please enter your IBAN account number.', 'woocommerce-gateway-marketing-360-payments' );
-		$stripe_params['payment_intent_error']      = __( 'We couldn\'t initiate the payment. Please try again.', 'woocommerce-gateway-marketing-360-payments' );
+		$stripe_params['no_prepaid_card_msg']       = __( 'Sorry, we\'re not accepting prepaid cards at this time. Your credit card has not been charged. Please try with alternative payment method.', 'marketing-360-payments-for-woocommerce' );
+		$stripe_params['no_sepa_owner_msg']         = __( 'Please enter your IBAN account name.', 'marketing-360-payments-for-woocommerce' );
+		$stripe_params['no_sepa_iban_msg']          = __( 'Please enter your IBAN account number.', 'marketing-360-payments-for-woocommerce' );
+		$stripe_params['payment_intent_error']      = __( 'We couldn\'t initiate the payment. Please try again.', 'marketing-360-payments-for-woocommerce' );
 		$stripe_params['sepa_mandate_notification'] = apply_filters( 'wc_stripe_sepa_mandate_notification', 'email' );
 		$stripe_params['allow_prepaid_card']        = apply_filters( 'wc_stripe_allow_prepaid_card', true ) ? 'yes' : 'no';
 		$stripe_params['inline_cc_form']            = $this->inline_cc_form ? 'yes' : 'no';
@@ -545,7 +545,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		$stripe_params['statement_descriptor']      = $this->statement_descriptor;
 		$stripe_params['elements_options']          = apply_filters( 'wc_stripe_elements_options', array() );
 		$stripe_params['sepa_elements_options']     = $sepa_elements_options;
-		$stripe_params['invalid_owner_name']        = __( 'Billing First Name and Last Name are required.', 'woocommerce-gateway-marketing-360-payments' );
+		$stripe_params['invalid_owner_name']        = __( 'Billing First Name and Last Name are required.', 'marketing-360-payments-for-woocommerce' );
 		$stripe_params['is_change_payment_page']    = isset( $_GET['change_payment_method'] ) ? 'yes' : 'no'; // wpcs: csrf ok.
 		$stripe_params['is_add_payment_page']       = is_wc_endpoint_url( 'add-payment-method' ) ? 'yes' : 'no';
 		$stripe_params['is_pay_for_order_page']     = is_wc_endpoint_url( 'order-pay' ) ? 'yes' : 'no';
@@ -575,7 +575,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 			return;
 		}
 
-		$localized_message = __( 'Sorry, we\'re not accepting prepaid cards at this time. Your credit card has not been charged. Please try with alternative payment method.', 'woocommerce-gateway-marketing-360-payments' );
+		$localized_message = __( 'Sorry, we\'re not accepting prepaid cards at this time. Your credit card has not been charged. Please try with alternative payment method.', 'marketing-360-payments-for-woocommerce' );
 		throw new WC_Stripe_Exception( print_r( $prepared_source->source_object, true ), $localized_message );
 	}
 
@@ -588,7 +588,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	 */
 	public function check_source( $prepared_source ) {
 		if ( empty( $prepared_source->source ) ) {
-			$localized_message = __( 'Payment processing failed. Please retry. Source Failed.', 'woocommerce-gateway-marketing-360-payments' );
+			$localized_message = __( 'Payment processing failed. Please retry. Source Failed.', 'marketing-360-payments-for-woocommerce' );
 			throw new WC_Stripe_Exception( print_r( $prepared_source, true ), $localized_message );
 		}
 	}
@@ -816,8 +816,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 		<tr>
 			<td class="label stripe-fee">
-				<?php echo wc_help_tip( __( 'This represents the fee Marketing 360® Payments collects for the transaction.', 'woocommerce-gateway-marketing-360-payments' ) ); // wpcs: xss ok. ?>
-				<?php esc_html_e( 'Marketing 360® Payments Fee:', 'woocommerce-gateway-marketing-360-payments' ); ?>
+				<?php echo wc_help_tip( __( 'This represents the fee Marketing 360® Payments collects for the transaction.', 'marketing-360-payments-for-woocommerce' ) ); // wpcs: xss ok. ?>
+				<?php esc_html_e( 'Marketing 360® Payments Fee:', 'marketing-360-payments-for-woocommerce' ); ?>
 			</td>
 			<td width="1%"></td>
 			<td class="total">
@@ -853,8 +853,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 		<tr>
 			<td class="label stripe-payout">
-				<?php echo wc_help_tip( __( 'This represents the net total that will be credited to your bank account. This may be in the currency that is set in your Marketing 360® Payments account.', 'woocommerce-gateway-marketing-360-payments' ) ); // wpcs: xss ok. ?>
-				<?php esc_html_e( 'Marketing 360® Payments Payout:', 'woocommerce-gateway-marketing-360-payments' ); ?>
+				<?php echo wc_help_tip( __( 'This represents the net total that will be credited to your bank account. This may be in the currency that is set in your Marketing 360® Payments account.', 'marketing-360-payments-for-woocommerce' ) ); // wpcs: xss ok. ?>
+				<?php esc_html_e( 'Marketing 360® Payments Payout:', 'marketing-360-payments-for-woocommerce' ); ?>
 			</td>
 			<td width="1%"></td>
 			<td class="total">
@@ -917,7 +917,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	 */
 	public function retry_after_error( $response, $order, $retry, $force_save_source, $previous_error, $use_order_source ) {
 		if ( ! $retry ) {
-			$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'woocommerce-gateway-marketing-360-payments' );
+			$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'marketing-360-payments-for-woocommerce' );
 			$order->add_order_note( $localized_message );
 			throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.
 		}
@@ -970,7 +970,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	 * @return string the new message.
 	 */
 	public function change_no_available_methods_message() {
-		return wpautop( __( "Almost there!\n\nYour order has already been created, the only thing that still needs to be done is for you to authorize the payment with your bank.", 'woocommerce-gateway-marketing-360-payments' ) );
+		return wpautop( __( "Almost there!\n\nYour order has already been created, the only thing that still needs to be done is for you to authorize the payment with your bank.", 'marketing-360-payments-for-woocommerce' ) );
 	}
 
 	/**
@@ -988,7 +988,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		$intent = $this->get_intent_from_order( $order );
 
 		if ( ! $intent ) {
-			throw new WC_Stripe_Exception( 'Payment Intent not found', __( 'Payment Intent not found for order #' . $order->get_id(), 'woocommerce-gateway-marketing-360-payments' ) );
+			throw new WC_Stripe_Exception( 'Payment Intent not found', __( 'Payment Intent not found for order #' . $order->get_id(), 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		if ( 'requires_payment_method' === $intent->status && isset( $intent->last_payment_error )
@@ -1211,8 +1211,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		// Load the right message and update the status.
 		$status_message = isset( $intent->last_payment_error )
 			/* translators: 1) The error message that was received from Stripe. */
-			? sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'woocommerce-gateway-marketing-360-payments' ), $intent->last_payment_error->message )
-			: __( 'Stripe SCA authentication failed.', 'woocommerce-gateway-marketing-360-payments' );
+			? sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'marketing-360-payments-for-woocommerce' ), $intent->last_payment_error->message )
+			: __( 'Stripe SCA authentication failed.', 'marketing-360-payments-for-woocommerce' );
 		$order->update_status( 'failed', $status_message );
 	}
 
@@ -1270,21 +1270,21 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 
 	// public function validate_m360_account_field( $key, $value ) {
 	// 	if( empty( $value ) ) {
-	// 		throw new Exception( __( 'Missing Marketing 360 Account', 'woocommerce-gateway-marketing-360-payments' ) );
+	// 		throw new Exception( __( 'Missing Marketing 360 Account', 'marketing-360-payments-for-woocommerce' ) );
 	// 	}
 	// 	return $value;
 	// }
 
 	// public function validate_client_id_field( $key, $value ) {
 	// 	if( empty( $value ) ) {
-	// 		throw new Exception( __( 'Missing Marketing 360 Client ID', 'woocommerce-gateway-marketing-360-payments' ) );
+	// 		throw new Exception( __( 'Missing Marketing 360 Client ID', 'marketing-360-payments-for-woocommerce' ) );
 	// 	}
 	// 	return $value;
 	// }
 
 	// public function validate_client_secret_field( $key, $value ) {
 	// 	if( empty( $value ) ) {
-	// 		throw new Exception( __( 'Missing Marketing 360 Client Secret', 'woocommerce-gateway-marketing-360-payments' ) );
+	// 		throw new Exception( __( 'Missing Marketing 360 Client Secret', 'marketing-360-payments-for-woocommerce' ) );
 	// 	}
 	// 	return $value;
 	// }
@@ -1292,7 +1292,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	// public function validate_publishable_key_field( $key, $value ) {
 	// 	$value = $this->validate_text_field( $key, $value );
 	// 	if ( ! empty( $value ) && ! preg_match( '/^pk_live_/', $value ) ) {
-	// 		throw new Exception( __( 'The "Live Publishable Key" should start with "pk_live", enter the correct key.', 'woocommerce-gateway-marketing-360-payments' ) );
+	// 		throw new Exception( __( 'The "Live Publishable Key" should start with "pk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
 	// 	}
 	// 	return $value;
 	// }
@@ -1300,7 +1300,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	// public function validate_secret_key_field( $key, $value ) {
 	// 	$value = $this->validate_text_field( $key, $value );
 	// 	if ( ! empty( $value ) && ! preg_match( '/^[rs]k_live_/', $value ) ) {
-	// 		throw new Exception( __( 'The "Live Secret Key" should start with "sk_live" or "rk_live", enter the correct key.', 'woocommerce-gateway-marketing-360-payments' ) );
+	// 		throw new Exception( __( 'The "Live Secret Key" should start with "sk_live" or "rk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
 	// 	}
 	// 	return $value;
 	// }
@@ -1308,7 +1308,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	// public function validate_test_publishable_key_field( $key, $value ) {
 	// 	$value = $this->validate_text_field( $key, $value );
 	// 	if ( ! empty( $value ) && ! preg_match( '/^pk_test_/', $value ) ) {
-	// 		throw new Exception( __( 'The "Test Publishable Key" should start with "pk_test", enter the correct key.', 'woocommerce-gateway-marketing-360-payments' ) );
+	// 		throw new Exception( __( 'The "Test Publishable Key" should start with "pk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
 	// 	}
 	// 	return $value;
 	// }
@@ -1316,7 +1316,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 	// public function validate_test_secret_key_field( $key, $value ) {
 	// 	$value = $this->validate_text_field( $key, $value );
 	// 	if ( ! empty( $value ) && ! preg_match( '/^[rs]k_test_/', $value ) ) {
-	// 		throw new Exception( __( 'The "Test Secret Key" should start with "sk_test" or "rk_test", enter the correct key.', 'woocommerce-gateway-marketing-360-payments' ) );
+	// 		throw new Exception( __( 'The "Test Secret Key" should start with "sk_test" or "rk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
 	// 	}
 	// 	return $value;
 	// }

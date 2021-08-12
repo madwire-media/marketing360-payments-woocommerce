@@ -1,16 +1,17 @@
 <?php
 /**
  * Plugin Name: Marketing 360® Payments for WooCommerce
- * Plugin URI: https://marketing360.com/woocommerce-gateway-marketing-360-payments
+ * Plugin URI: https://marketing360.com/marketing-360-payments-for-woocommerce
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
  * Version: 1.0.0
- * Requires at least: 4.4
- * Tested up to: 5.4
+ * Requires at least: 5.4
+ * Tested up to: 5.8
+ * Stable tag: 1.0.0
  * WC requires at least: 3.0
  * WC tested up to: 4.2
- * Text Domain: woocommerce-gateway-marketing-360-payments
+ * Text Domain: marketing-360-payments-for-woocommerce
  * Domain Path: /languages
  *
  */
@@ -40,7 +41,7 @@ define( 'WC_M360_PAYMENTS_PLUGIN_PATH', untrailingslashit(plugin_dir_path	(__FIL
  */
 function woocommerce_m360_payments_missing_wc_notice() {
 	/* translators: 1. URL link. */
-	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Marketing 360® Payments requires WooCommerce to be installed and active. You can download %s here.', 'woocommerce-gateway-marketing-360-payments' ), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>' ) . '</strong></p></div>';
+	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Marketing 360® Payments requires WooCommerce to be installed and active. You can download %s here.', 'marketing-360-payments-for-woocommerce' ), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>' ) . '</strong></p></div>';
 }
 
 /**
@@ -51,7 +52,7 @@ function woocommerce_m360_payments_missing_wc_notice() {
  */
 function woocommerce_m360_payments_wc_not_supported() {
 	/* translators: $1. Minimum WooCommerce version. $2. Current WooCommerce version. */
-	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Marketing 360® Payments requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'woocommerce-gateway-marketing-360-payments' ), WC_M360_PAYMENTS_MIN_WC_VER, WC_VERSION ) . '</strong></p></div>';
+	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Marketing 360® Payments requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'marketing-360-payments-for-woocommerce' ), WC_M360_PAYMENTS_MIN_WC_VER, WC_VERSION ) . '</strong></p></div>';
 }
 
 // require('plugin-update-checker/plugin-update-checker.php');
@@ -233,7 +234,7 @@ function woocommerce_gateway_m360_payments_init() {
 			 */
 			public function plugin_action_links( $links ) {
 				$plugin_links = array(
-					'<a href="admin.php?page=wc-settings&tab=checkout&section=stripe">' . esc_html__( 'Settings', 'woocommerce-gateway-marketing-360-payments' ) . '</a>',
+					'<a href="admin.php?page=wc-settings&tab=checkout&section=stripe">' . esc_html__( 'Settings', 'marketing-360-payments-for-woocommerce' ) . '</a>',
 				);
 				return array_merge( $plugin_links, $links );
 			}
@@ -249,8 +250,8 @@ function woocommerce_gateway_m360_payments_init() {
 			public function plugin_row_meta( $links, $file ) {
 				if ( plugin_basename( __FILE__ ) === $file ) {
 					$row_meta = array(
-						//'docs'    => '<a href="' . esc_url( apply_filters( 'woocommerce_gateway_stripe_docs_url', 'https://docs.woocommerce.com/document/stripe/' ) ) . '" title="' . esc_attr( __( 'View Documentation', 'woocommerce-gateway-marketing-360-payments' ) ) . '">' . __( 'Docs', 'woocommerce-gateway-marketing-360-payments' ) . '</a>',
-						//'support' => '<a href="' . esc_url( apply_filters( 'woocommerce_gateway_stripe_support_url', 'https://woocommerce.com/my-account/create-a-ticket?select=18627' ) ) . '" title="' . esc_attr( __( 'Open a support request at Marketing360.com', 'woocommerce-gateway-marketing-360-payments' ) ) . '">' . __( 'Support', 'woocommerce-gateway-marketing-360-payments' ) . '</a>',
+						//'docs'    => '<a href="' . esc_url( apply_filters( 'woocommerce_gateway_stripe_docs_url', 'https://docs.woocommerce.com/document/stripe/' ) ) . '" title="' . esc_attr( __( 'View Documentation', 'marketing-360-payments-for-woocommerce' ) ) . '">' . __( 'Docs', 'marketing-360-payments-for-woocommerce' ) . '</a>',
+						//'support' => '<a href="' . esc_url( apply_filters( 'woocommerce_gateway_stripe_support_url', 'https://woocommerce.com/my-account/create-a-ticket?select=18627' ) ) . '" title="' . esc_attr( __( 'Open a support request at Marketing360.com', 'marketing-360-payments-for-woocommerce' ) ) . '">' . __( 'Support', 'marketing-360-payments-for-woocommerce' ) . '</a>',
 					);
 					return array_merge( $links, $row_meta );
 				}

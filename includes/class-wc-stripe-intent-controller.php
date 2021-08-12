@@ -55,7 +55,7 @@ class WC_Stripe_Intent_Controller {
 	 */
 	protected function get_order_from_request() {
 		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['nonce'] ), 'wc_stripe_confirm_pi' ) ) {
-			throw new WC_Stripe_Exception( 'missing-nonce', __( 'CSRF verification failed.', 'woocommerce-gateway-marketing-360-payments' ) );
+			throw new WC_Stripe_Exception( 'missing-nonce', __( 'CSRF verification failed.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		// Load the order ID.
@@ -68,7 +68,7 @@ class WC_Stripe_Intent_Controller {
 		$order = wc_get_order( $order_id );
 
 		if ( ! $order ) {
-			throw new WC_Stripe_Exception( 'missing-order', __( 'Missing order ID for payment confirmation', 'woocommerce-gateway-marketing-360-payments' ) );
+			throw new WC_Stripe_Exception( 'missing-order', __( 'Missing order ID for payment confirmation', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		return $order;
@@ -88,7 +88,7 @@ class WC_Stripe_Intent_Controller {
 			$order = $this->get_order_from_request();
 		} catch ( WC_Stripe_Exception $e ) {
 			/* translators: Error message text */
-			$message = sprintf( __( 'Payment verification error: %s', 'woocommerce-gateway-marketing-360-payments' ), $e->getLocalizedMessage() );
+			$message = sprintf( __( 'Payment verification error: %s', 'marketing-360-payments-for-woocommerce' ), $e->getLocalizedMessage() );
 			wc_add_notice( esc_html( $message ), 'error' );
 
 			$redirect_url = $woocommerce->cart->is_empty()

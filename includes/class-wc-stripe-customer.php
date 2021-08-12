@@ -100,7 +100,7 @@ class WC_Stripe_Customer {
 	 * @return array
 	 */
 	protected function generate_customer_request( $args = array() ) {
-		$billing_email = isset( $_POST['billing_email'] ) ? filter_var( $_POST['billing_email'], FILTER_SANITIZE_EMAIL ) : '';
+		$billing_email = isset( $_POST['billing_email'] ) ? sanitize_email($_POST['billing_email']) : '';
 		$user          = $this->get_user();
 
 		if ( $user ) {
@@ -118,18 +118,18 @@ class WC_Stripe_Customer {
 			}
 
 			// translators: %1$s First name, %2$s Second name, %3$s Username.
-			$description = sprintf( __( 'Name: %1$s %2$s, Username: %s', 'woocommerce-gateway-marketing-360-payments' ), $billing_first_name, $billing_last_name, $user->user_login );
+			$description = sprintf( __( 'Name: %1$s %2$s, Username: %s', 'marketing-360-payments-for-woocommerce' ), $billing_first_name, $billing_last_name, $user->user_login );
 
 			$defaults = array(
 				'email'       => $user->user_email,
 				'description' => $description,
 			);
 		} else {
-			$billing_first_name = isset( $_POST['billing_first_name'] ) ? filter_var( wp_unslash( $_POST['billing_first_name'] ), FILTER_SANITIZE_STRING ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-			$billing_last_name  = isset( $_POST['billing_last_name'] ) ? filter_var( wp_unslash( $_POST['billing_last_name'] ), FILTER_SANITIZE_STRING ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+			$billing_first_name = isset( $_POST['billing_first_name'] ) ? sanitize_text_field($_POST['billing_first_name']) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+			$billing_last_name  = isset( $_POST['billing_last_name'] ) ? sanitize_text_field($_POST['billing_last_name']) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 
 			// translators: %1$s First name, %2$s Second name.
-			$description = sprintf( __( 'Name: %1$s %2$s, Guest', 'woocommerce-gateway-marketing-360-payments' ), $billing_first_name, $billing_last_name );
+			$description = sprintf( __( 'Name: %1$s %2$s, Guest', 'marketing-360-payments-for-woocommerce' ), $billing_first_name, $billing_last_name );
 
 			$defaults = array(
 				'email'       => $billing_email,
@@ -181,7 +181,7 @@ class WC_Stripe_Customer {
 	 */
 	public function update_customer( $args = array(), $is_retry = false ) {
 		if ( empty( $this->get_id() ) ) {
-			throw new WC_Stripe_Exception( 'id_required_to_update_user', __( 'Attempting to update a Stripe customer without a customer ID.', 'woocommerce-gateway-marketing-360-payments' ) );
+			throw new WC_Stripe_Exception( 'id_required_to_update_user', __( 'Attempting to update a Stripe customer without a customer ID.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		$args     = $this->generate_customer_request( $args );
@@ -252,7 +252,7 @@ class WC_Stripe_Customer {
 				return $response;
 			}
 		} elseif ( empty( $response->id ) ) {
-			return new WP_Error( 'error', __( 'Unable to add payment source.', 'woocommerce-gateway-marketing-360-payments' ) );
+			return new WP_Error( 'error', __( 'Unable to add payment source.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		// Add token to WooCommerce.

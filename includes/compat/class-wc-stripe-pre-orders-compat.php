@@ -48,7 +48,7 @@ class WC_Stripe_Pre_Orders_Compat extends WC_Stripe_Payment_Gateway {
 
 			// We need a source on file to continue.
 			if ( empty( $prepared_source->customer ) || empty( $prepared_source->source ) ) {
-				throw new WC_Stripe_Exception( __( 'Unable to store payment details. Please try again.', 'woocommerce-gateway-marketing-360-payments' ) );
+				throw new WC_Stripe_Exception( __( 'Unable to store payment details. Please try again.', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			// Setup the response early to allow later modifications.
@@ -111,7 +111,7 @@ class WC_Stripe_Pre_Orders_Compat extends WC_Stripe_Payment_Gateway {
 				$id = $charge->id;
 
 				$order->set_transaction_id( $id );
-				$order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'woocommerce-gateway-marketing-360-payments' ), $id ) );
+				$order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'marketing-360-payments-for-woocommerce' ), $id ) );
 				if ( is_callable( array( $order, 'save' ) ) ) {
 					$order->save();
 				}
@@ -128,7 +128,7 @@ class WC_Stripe_Pre_Orders_Compat extends WC_Stripe_Payment_Gateway {
 		} catch ( Exception $e ) {
 			$error_message = is_callable( array( $e, 'getLocalizedMessage' ) ) ? $e->getLocalizedMessage() : $e->getMessage();
 			/* translators: error message */
-			$order_note = sprintf( __( 'Stripe Transaction Failed (%s)', 'woocommerce-gateway-marketing-360-payments' ), $error_message );
+			$order_note = sprintf( __( 'Stripe Transaction Failed (%s)', 'marketing-360-payments-for-woocommerce' ), $error_message );
 
 			// Mark order as failed if not already set,
 			// otherwise, make sure we add the order note so we can detect when someone fails to check out multiple times

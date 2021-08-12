@@ -141,7 +141,7 @@ class WC_Stripe_API {
 				)
 			);
 
-			throw new WC_Stripe_Exception( print_r( $response, true ), __( 'There was a problem connecting to the Marketing 360® Payments API endpoint.', 'woocommerce-gateway-marketing-360-payments' ) );
+			throw new WC_Stripe_Exception( print_r( $response, true ), __( 'There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		if ( $with_headers ) {
@@ -175,7 +175,7 @@ class WC_Stripe_API {
 
 		if ( is_wp_error( $response ) || empty( $response['body'] ) ) {
 			WC_Stripe_Logger::log( 'Error Response: ' . print_r( $response, true ) );
-			return new WP_Error( 'stripe_error', __( 'There was a problem connecting to the Marketing 360® Payments API endpoint.', 'woocommerce-gateway-marketing-360-payments' ) );
+			return new WP_Error( 'stripe_error', __( 'There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		return json_decode( $response['body'] );
