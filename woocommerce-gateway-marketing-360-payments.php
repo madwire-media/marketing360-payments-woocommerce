@@ -5,10 +5,10 @@
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
- * Version: 1.0.1
+ * Version: 1.0.2
  * Requires at least: 5.4
- * Tested up to: 5.8
- * Stable tag: 1.0.1
+ * Tested up to: 6.0
+ * Stable tag: 1.0.2
  * WC requires at least: 3.0
  * WC tested up to: 4.2
  * Text Domain: marketing-360-payments-for-woocommerce
@@ -54,14 +54,6 @@ function woocommerce_m360_payments_wc_not_supported() {
 	/* translators: $1. Minimum WooCommerce version. $2. Current WooCommerce version. */
 	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Marketing 360® Payments requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'marketing-360-payments-for-woocommerce' ), WC_M360_PAYMENTS_MIN_WC_VER, WC_VERSION ) . '</strong></p></div>';
 }
-
-// require('plugin-update-checker/plugin-update-checker.php');
-// $update_checker = Puc_v4_Factory::buildUpdateChecker(
-// 	'https://updates.madwire.com/files/woocommerce-payments-m360/details.json',
-// 	__FILE__,
-// 	'woocommerce-payments-m360'
-// );
-
 
 function woocommerce_gateway_m360_payments_stripe_installed_notice() {
 	ob_start(); ?>
