@@ -37,7 +37,7 @@ class WC_Stripe_Helper {
 	 * @param object $order
 	 * @param string $currency
 	 */
-	public static function update_stripe_currency( $order, $currency ) {
+	public static function update_stripe_currency( $order = null, $currency ) {
 		if ( is_null( $order ) ) {
 			return false;
 		}

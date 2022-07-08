@@ -108,12 +108,12 @@ class Marketing_360_Payments {
 
 	 // Gets the full Account Details object.
 	public static function get_account_details() {
-		return @unserialize(get_option('woocommerce_stripe_settings')['account_details']);
+		return json_decode(get_option('woocommerce_stripe_settings')['account_details']);
 	}
 
     // Overwrites the account details object
     public static function set_account_details($account_details) {
-    	update_option('woocommerce_stripe_account_details', @serialize($account_details));
+    	update_option('woocommerce_stripe_account_details', json_encode($account_details));
     }
 
     // Get the Marketing 360 Account ID from the full account details object.
@@ -259,6 +259,10 @@ class Marketing_360_Payments {
 			]
 		);
 
+		if (is_wp_error($response)) {
+			return new WP_Error(500, $response->get_error_message());
+		}
+
 		$response_code = $response['response']['code'];
 
 		if ($response_code !== 200 ) {
@@ -314,8 +318,8 @@ class Marketing_360_Payments {
 			$accounts = self::get_m360_accounts($token);
 
 			if (is_wp_error($accounts)) {
-				http_response_code($token->get_error_code());
-				die($token->get_error_message());
+				http_response_code($accounts->get_error_code());
+				die($accounts->get_error_message());
 			}
 
 			if ($accounts) {
@@ -329,7 +333,7 @@ class Marketing_360_Payments {
 
 					$account->client_id = $details->clientId;
 					$account->client_secret = $details->secret;
-					$account->payload = serialize($account);
+					$account->payload = json_encode($account);
 
 					ob_start(); ?>
 						<div class="m360-account">
@@ -384,9 +388,10 @@ class Marketing_360_Payments {
     public static function add_stripe_details_callback($settings) {
 
     	if (array_key_exists('account_details', $settings)) {
-    		$u_settings = @unserialize($settings['account_details']);
+    		$str = substr( $settings['account_details'], 1, -1 );
+    		$u_settings = json_decode($settings['account_details']);
 
-    		if ($u_settings !== false) {
+    		if (!is_null($u_settings)) {
 	        	$stripe_details = self::get_stripe_details(
 	        		$u_settings->client_id,
 	        		$u_settings->client_secret,
@@ -396,7 +401,7 @@ class Marketing_360_Payments {
 	        	$u_settings->stripeAccountId = $stripe_details->stripeAccountId;
 	        	$u_settings->stripeKey = $stripe_details->stripeKey;
 
-	            $settings['account_details'] = serialize($u_settings);
+	            $settings['account_details'] = json_encode($u_settings);
     		}
     	}
 

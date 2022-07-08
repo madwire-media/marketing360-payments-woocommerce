@@ -7,8 +7,8 @@
  * Author URI: https://marketing360.com
  * Version: 1.0.1
  * Requires at least: 5.4
- * Tested up to: 6.0
- * Stable tag: 1.0.0
+ * Tested up to: 5.8
+ * Stable tag: 1.0.1
  * WC requires at least: 3.0
  * WC tested up to: 4.2
  * Text Domain: marketing-360-payments-for-woocommerce
@@ -116,7 +116,7 @@ function woocommerce_gateway_m360_payments_init() {
 			 *
 			 * @return void
 			 */
-			public function __clone() {}
+			private function __clone() {}
 
 			/**
 			 * Private unserialize method to prevent unserializing of the *Singleton*
@@ -124,13 +124,13 @@ function woocommerce_gateway_m360_payments_init() {
 			 *
 			 * @return void
 			 */
-			public function __wakeup() {}
+			private function __wakeup() {}
 
 			/**
 			 * Protected constructor to prevent creating a new instance of the
 			 * *Singleton* via the `new` operator from outside of this class.
 			 */
-			public function __construct() {
+			private function __construct() {
 				add_action( 'admin_init', array( $this, 'install' ) );
 				$this->init();
 			}

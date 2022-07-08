@@ -263,7 +263,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 				</th>
 				<td class="forminp">
 					<?php
-						$details = @unserialize($this->get_option( $key ));
+						$details = json_decode($this->get_option( $key ));
 						$button_text = ($details) ? 'Connect to a different Marketing 360® account' : 'Connect to your Marketing 360® account';
 					?>
 		            <div id="wc-m360-notice-box">

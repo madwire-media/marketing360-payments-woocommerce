@@ -2,7 +2,7 @@
 Contributors: marketing360payments
 Tags: ecommerce, woocommerce, payment, payment gateway
 Requires at least: 4.7
-Tested up to: 6.0
+Tested up to: 5.8
 Requires PHP: 7.0
 Stable tag: 1.0.0
 License: GPLv2
@@ -46,5 +46,5 @@ If you ever run into issues or you have questions, let us know!
 
 == Screenshots ==
 1. Connecting your website to your Marketing 360® account takes just seconds.
-2. Configure your payment gateway settings.
-3. Every transaction will display in the Marketing 360® Payments app
+2. Your customers get a sleek, simple way to enter their card details during checkout.
+3. Each customer that submits a payment will display in the Marketing 360® Payments app.
