@@ -3,18 +3,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-echo $email_heading . "\n\n";
+echo esc_html($email_heading) . "\n\n";
 
 printf(
 	// translators: %s is a link to the payment re-authentication URL.
 	_x( 'Your pre-order is now available, but payment cannot be completed automatically. Please complete the payment now: %s', 'marketing-360-payments-for-woocommerce' ),
-	$authorization_url
+	esc_url($authorization_url)
 );
 
 if ( $email->get_custom_message() ) :
 
 	echo "----------\n\n";
-	echo wptexturize( $email->get_custom_message() ) . "\n\n";
+	echo wptexturize( esc_html($email->get_custom_message()) ) . "\n\n";
 	echo "----------\n\n";
 
 endif;
