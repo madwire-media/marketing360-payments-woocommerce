@@ -108,7 +108,7 @@ function woocommerce_gateway_m360_payments_init() {
 			 *
 			 * @return void
 			 */
-			private function __clone() {}
+			public function __clone() {}
 
 			/**
 			 * Private unserialize method to prevent unserializing of the *Singleton*
@@ -116,13 +116,13 @@ function woocommerce_gateway_m360_payments_init() {
 			 *
 			 * @return void
 			 */
-			private function __wakeup() {}
+			public function __wakeup() {}
 
 			/**
 			 * Protected constructor to prevent creating a new instance of the
 			 * *Singleton* via the `new` operator from outside of this class.
 			 */
-			private function __construct() {
+			public function __construct() {
 				add_action( 'admin_init', array( $this, 'install' ) );
 				$this->init();
 			}
