@@ -259,7 +259,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		ob_start(); ?>
 			<tr valign="top">
 				<th scope="row" class="titledesc">
-					<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
+					<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo esc_html($this->get_tooltip_html( $data )); // WPCS: XSS ok. ?></label>
 				</th>
 				<td class="forminp">
 					<?php
@@ -268,11 +268,11 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 					?>
 		            <div id="wc-m360-notice-box">
 		                <?php if ($details): ?>
-		                    <p><?php echo __("Currently connected to Marketing 360® account: {$details->externalAccountNumber} {$details->displayName}. <a href=\"#\" onclick=\"m360SignOut()\">Disconnect Account</a>", 'marketing-360-payments-for-woocommerce'); ?></p>
+							<p><?php echo sprintf( __( 'Currently connected to Marketing 360® account: %s %s. ', 'marketing-360-payments-for-woocommerce' ), esc_html( $details->externalAccountNumber ), esc_html( $details->displayName ));?><a href="#" onclick="m360SignOut()">Disconnect Account</a></p>
 		                <?php endif; ?>
 		            </div>
 		            <button id="wc-m360-api-auth" class="button-secondary">
-		                <?php echo esc_html(__($button_text, 'marketing-360-payments-for-woocommerce')); ?>
+		                <?php echo esc_html($button_text); ?>
 		            </button>
 		            <style>
 		                #wc-m360-notice-box p {
@@ -424,7 +424,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway {
 		ob_start(); ?>
 			connectUrl 		= "<?php echo get_rest_url(null, 'wc_marketing_360_payments/' . Marketing_360_Payments::VER . '/sign_in'); ?>";
             nonce 			= "<?php echo wp_create_nonce('wp_rest'); ?>";
-        	stripeKey 		= "<?php echo $this->publishable_key; ?>";
+        	stripeKey 		= "<?php echo esc_attr($this->publishable_key); ?>";
 		<?php wp_add_inline_script('woocommerce_stripe_admin', ob_get_clean(), 'before');
 
 		wp_enqueue_style( 'woocommerce_stripe_admin', plugins_url( 'assets/css/admin' . $suffix . '.css', WC_M360_PAYMENTS_MAIN_FILE ), array(), WC_M360_PAYMENTS_VERSION);

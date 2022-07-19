@@ -55,15 +55,18 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 	 */
 	public function check_for_webhook() {
 		// We will need to confirm webhooks with Marketing 360 Payments here to get them registered
-		if ( isset($_GET['confirm'] ) ) {
+		$confirm  = isset( $_GET['confirm'] ) ? wc_clean( $_GET['confirm'] ) : '';
+		$wc_api  = isset( $_GET['wc-api'] ) ? wc_clean( $_GET['wc-api'] ) : '';
+
+		if ( !empty($confirm) ) {
 			header('Content-Type: text/plain');
-			echo $_GET['confirm'];
+			echo esc_html($confirm);
 			exit();
 		}
 
 		if ( ( 'POST' !== $_SERVER['REQUEST_METHOD'] )
-			|| ! isset( $_GET['wc-api'] )
-			|| ( 'wc_stripe' !== $_GET['wc-api'] )
+			|| empty( $wc_api )
+			|| ( 'wc_stripe' !== $wc_api )
 		) {
 			return;
 		}
