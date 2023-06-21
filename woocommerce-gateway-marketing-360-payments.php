@@ -5,9 +5,9 @@
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires at least: 5.4
- * Tested up to: 6.0
+ * Tested up to: 6.1
  * Stable tag: 1.0.2
  * WC requires at least: 3.0
  * WC tested up to: 4.2
@@ -41,7 +41,7 @@ define( 'WC_M360_PAYMENTS_PLUGIN_PATH', untrailingslashit(plugin_dir_path	(__FIL
  */
 function woocommerce_m360_payments_missing_wc_notice() {
 	/* translators: 1. URL link. */
-	echo '<div class="error"><p><strong>' . sprintf( __( 'Marketing 360® Payments requires WooCommerce to be installed and active. You can download %s here.', 'marketing-360-payments-for-woocommerce' ), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>' ) . '</strong></p></div>';
+	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Marketing 360® Payments requires WooCommerce to be installed and active. You can download %s here.', 'marketing-360-payments-for-woocommerce' ), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>' ) . '</strong></p></div>';
 }
 
 /**
@@ -52,7 +52,7 @@ function woocommerce_m360_payments_missing_wc_notice() {
  */
 function woocommerce_m360_payments_wc_not_supported() {
 	/* translators: $1. Minimum WooCommerce version. $2. Current WooCommerce version. */
-	echo '<div class="error"><p><strong>' . sprintf( __( 'Marketing 360® Payments requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'marketing-360-payments-for-woocommerce' ), WC_M360_PAYMENTS_MIN_WC_VER, WC_VERSION ) . '</strong></p></div>';
+	echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'Marketing 360® Payments requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'marketing-360-payments-for-woocommerce' ), WC_M360_PAYMENTS_MIN_WC_VER, WC_VERSION ) . '</strong></p></div>';
 }
 
 function woocommerce_gateway_m360_payments_stripe_installed_notice() {
@@ -226,7 +226,7 @@ function woocommerce_gateway_m360_payments_init() {
 			 */
 			public function plugin_action_links( $links ) {
 				$plugin_links = array(
-					'<a href="admin.php?page=wc-settings&tab=checkout&section=stripe">' . __( 'Settings', 'marketing-360-payments-for-woocommerce' ) . '</a>',
+					'<a href="admin.php?page=wc-settings&tab=checkout&section=stripe">' . esc_html__( 'Settings', 'marketing-360-payments-for-woocommerce' ) . '</a>',
 				);
 				return array_merge( $plugin_links, $links );
 			}

@@ -2,9 +2,9 @@
 Contributors: marketing360payments
 Tags: ecommerce, woocommerce, payment, payment gateway
 Requires at least: 5.4
-Tested up to: 6.0
+Tested up to: 6.1
 Requires PHP: 7.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 

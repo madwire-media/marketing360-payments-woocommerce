@@ -172,7 +172,7 @@ class WC_Stripe_Payment_Tokens {
 	public function get_account_saved_payment_methods_list_item_sepa( $item, $payment_token ) {
 		if ( 'sepa' === strtolower( $payment_token->get_type() ) ) {
 			$item['method']['last4'] = $payment_token->get_last4();
-			$item['method']['brand'] = __( 'SEPA IBAN', 'marketing-360-payments-for-woocommerce' );
+			$item['method']['brand'] = esc_html__( 'SEPA IBAN', 'marketing-360-payments-for-woocommerce' );
 		}
 
 		return $item;

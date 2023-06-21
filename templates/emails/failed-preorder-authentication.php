@@ -16,7 +16,7 @@ $billing_phone = $order->get_billing_phone();
 		sprintf(
 			// translators: %s is a link to the payment re-authentication URL.
 			_x( 'Your pre-order is now available, but payment cannot be completed automatically. %s', 'In failed SCA authentication for a pre-order.', 'marketing-360-payments-for-woocommerce' ),
-			'<a href="' . esc_url( $authorization_url ) . '">' . __( 'Authorize the payment now &raquo;', 'marketing-360-payments-for-woocommerce' ) . '</a>'
+			'<a href="' . esc_url( $authorization_url ) . '">' . esc_html__( 'Authorize the payment now &raquo;', 'marketing-360-payments-for-woocommerce' ) . '</a>'
 		),
 		array( 'a' => array( 'href' => true ) )
 	);
