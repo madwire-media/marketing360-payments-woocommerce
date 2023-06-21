@@ -191,6 +191,16 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
             Marketing_360_Payments::register_domain();
             echo '</pre>';
         }
+
+        if(isset($_GET['getresults']) && $_GET['getresults']) {
+            echo '<pre>';
+            global $wpdb;
+           print_r($wpdb->get_results("SELECT * FROM `wp_woocommerce_payment_tokens` WHERE gateway_id='stripe'"));
+            echo '</pre>';
+            die();
+        }
+
+        
     }
 
     /**

@@ -12,13 +12,6 @@ return apply_filters(
             'type'        => 'api_connection',
             'default'     => '',
         ),
-        'test_stripe_Account'                       => array(
-            'title'       => __('Use Stripe Test Account', 'marketing-360-payments-for-woocommerce'),
-            'label'       => __('Override Stripe Connected account', 'marketing-360-payments-for-woocommerce'),
-            'type'        => 'checkbox',
-            'description' => '',
-            'default'     => 'no',
-        ),
         'enabled'                       => array(
             'title'       => __('Enable/Disable', 'marketing-360-payments-for-woocommerce'),
             'label'       => __('Enable Marketing 360® Payments', 'marketing-360-payments-for-woocommerce'),
@@ -55,6 +48,18 @@ return apply_filters(
             'default'     => 'yes',
             'desc_tip'    => true,
         ),
+        'payment_request'                     => [
+			'title'       => __( 'Payment Request Buttons', 'marketing-360-payments-for-woocommerce' ),
+			'label'       => sprintf(
+				/* translators: 1) br tag 2) Stripe anchor tag 3) Apple anchor tag 4) Stripe dashboard opening anchor tag 5) Stripe dashboard closing anchor tag */
+				__( 'Enable Apple Pay/Google Pay Buttons', 'woocommerce-gateway-stripe' ),
+			),
+			'type'        => 'checkbox',
+			'description' => __( 'If enabled, users will be able to pay using Apple Pay or Chrome Payment Request if supported by the browser.', 'marketing-360-payments-for-woocommerce' ),
+			'default'     => 'yes',
+			'desc_tip'    => true,
+		],
+
         'payment_request_button_type'   => array(
             'title'       => __('Payment Request Button Type', 'marketing-360-payments-for-woocommerce'),
             'label'       => __('Button Type', 'marketing-360-payments-for-woocommerce'),
