@@ -205,22 +205,6 @@ function woocommerce_gateway_m360_payments_init()
             }
             function temp_woocommerce_stripe_settings( $value ) {
                 $value['payment_request'] = 'yes';
- /*                 $value['publishable_key'] = 'pk_live_51MOZw8Fj0Vn6rFSLpYmEexsuvSdkNlk3ILJizEMC1NlHEaeVtO19sHAaTwZ2E0yRZ5gUGBBgD09kPYcUBkAbWJlJ001gNVGjju';
-                $value['secret_key'] = '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';
-               $value['webhook_secret'] = 'we_1MP6TKFj0Vn6rFSL77YPigSA';
-                            $value['testmode'] = 'no';
-                $value['apple_pay_verified_domain'] = 'fd9a-52-6-168-200.ngrok.io';
-                $value['apple_pay_domain_set'] = 'yes';
-                // [statement_descriptor] => 
-                $value['title_upe'] = '';
-                $value['payment_request_button_size'] = 'default';
-                $value['payment_request_button_locations'] = Array('product','cart','checkout');
-            
-                $value['is_short_statement_descriptor_enabled'] = 'no';
-                $value['upe_checkout_experience_enabled'] = 'disabled';
-                $value['upe_checkout_experience_accepted_payments'] = Array();
- */                        
-                return $value;
             }
             /**
              * Updates the plugin version in db
