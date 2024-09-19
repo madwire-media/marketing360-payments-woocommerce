@@ -5,12 +5,12 @@
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
- * Version: 1.0.4
- * Requires at least: 6.0
+ * Version: 1.0.5
+ * Requires at least: 6.4
  * Tested up to: 6.2.2
  * Stable tag: 1.0.4
- * WC requires at least: 7.5
- * WC tested up to: 7.8
+ * WC requires at least: 8.9
+ * WC tested up to: 9.3
  * Text Domain: marketing-360-payments-for-woocommerce
  * Domain Path: /languages
  *
@@ -60,10 +60,12 @@ function woocommerce_m360_payments_wc_not_supported()
 function woocommerce_gateway_m360_payments_stripe_installed_notice()
 {
     ob_start(); ?>
-		<div class="notice notice-error">
-			<p><?php echo __('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.'); ?></p>
-		</div>
-	<?php echo ob_get_clean();
+<div class="notice notice-error">
+  <p>
+    <?php echo __('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.'); ?>
+  </p>
+</div>
+<?php echo ob_get_clean();
 }
 
 add_action('plugins_loaded', 'woocommerce_gateway_m360_payments_init', 9999);
