@@ -7,8 +7,8 @@
  * Author URI: https://marketing360.com
  * Version: 1.0.5
  * Requires at least: 6.4
- * Tested up to: 6.2.2
- * Stable tag: 1.0.4
+ * Tested up to: 6.4
+ * Stable tag: 1.0.5
  * WC requires at least: 8.9
  * WC tested up to: 9.3
  * Text Domain: marketing-360-payments-for-woocommerce
@@ -138,7 +138,7 @@ function woocommerce_gateway_m360_payments_init()
                 {
                     echo '<pre>'; 
                    add_filter( 'option_woocommerce_stripe_settings', array( $this, 'temp_woocommerce_stripe_settings') );
-                    print_r(get_option('woocommerce_stripe_settings')); 
+                   print_r(esc_html(get_option('woocommerce_stripe_settings'))); 
                     echo '</pre>';
                 }
 
@@ -160,21 +160,73 @@ function woocommerce_gateway_m360_payments_init()
 
                 require_once dirname(__FILE__) . '/marketing-360-payments.php';
 
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-exception.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-logger.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-helper.php';
-                include_once dirname(__FILE__) . '/includes/class-wc-stripe-api.php';
-                require_once dirname(__FILE__) . '/includes/abstracts/abstract-wc-stripe-payment-gateway.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-webhook-handler.php';
-                require_once dirname(__FILE__) . '/includes/compat/class-wc-stripe-pre-orders-compat.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-m360-stripe-apple-pay-registration.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-gateway-stripe.php';
-                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-payment-request.php';
-                require_once dirname(__FILE__) . '/includes/compat/class-wc-stripe-subs-compat.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-order-handler.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-payment-tokens.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-customer.php';
-                require_once dirname(__FILE__) . '/includes/class-wc-stripe-intent-controller.php';
+                require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-feature-flags.php';
+				// require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-upe-compatibility.php';
+				// require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-co-branded-cc-compatibility.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-exception.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-logger.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-helper.php';
+				include_once dirname( __FILE__ ) . '/includes/class-wc-stripe-api.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-subscriptions-utilities.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-subscriptions.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-pre-orders.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/class-wc-stripe-subscriptions-legacy-sepa-token-update.php';
+				require_once dirname( __FILE__ ) . '/includes/abstracts/abstract-wc-stripe-payment-gateway.php';
+				require_once dirname( __FILE__ ) . '/includes/abstracts/abstract-wc-stripe-payment-gateway-voucher.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-action-scheduler-service.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-webhook-state.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-webhook-handler.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-sepa-payment-token.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-link-payment-token.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-cash-app-pay-token.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-apple-pay-registration.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-stripe.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-gateway.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-alipay.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-giropay.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-ideal.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-klarna.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-affirm.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-afterpay-clearpay.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-bancontact.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-boleto.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-oxxo.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-eps.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-sepa.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-p24.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-sofort.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-multibanco.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-link.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-wechat-pay.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-bancontact.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-sofort.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-giropay.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-eps.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-ideal.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-p24.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-alipay.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-sepa.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-multibanco.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-boleto.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-gateway-stripe-oxxo.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-payment-request.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-express-checkout-element.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-express-checkout-helper.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-express-checkout-ajax-handler.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/class-wc-stripe-woo-compat-utils.php';
+				require_once dirname( __FILE__ ) . '/includes/connect/class-wc-stripe-connect.php';
+				require_once dirname( __FILE__ ) . '/includes/connect/class-wc-stripe-connect-api.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-order-handler.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-payment-tokens.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-customer.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-intent-controller.php';
+				require_once dirname( __FILE__ ) . '/includes/admin/class-wc-stripe-inbox-notes.php';
+				require_once dirname( __FILE__ ) . '/includes/admin/class-wc-stripe-upe-compatibility-controller.php';
+				require_once dirname( __FILE__ ) . '/includes/migrations/class-allowed-payment-request-button-types-update.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-account.php';
 
                 if (is_admin()) {
                     require_once dirname(__FILE__) . '/includes/admin/class-wc-stripe-admin-notices.php';
@@ -187,9 +239,9 @@ function woocommerce_gateway_m360_payments_init()
                 // Modify emails emails.
                 add_filter('woocommerce_email_classes', array( $this, 'add_emails' ), 20);
 
-                if (version_compare(WC_VERSION, '3.4', '<')) {
-                    add_filter('woocommerce_get_sections_checkout', array( $this, 'filter_gateway_order_admin' ));
-                }
+                // if (version_compare(WC_VERSION, '3.4', '<')) {
+                //     add_filter('woocommerce_get_sections_checkout', array( $this, 'filter_gateway_order_admin' ));
+                // }
 
                 // Register the REST endpoint for testing the authorization credentials and returning a list of M360 Accounts.
                 add_action('rest_api_init', function () {
