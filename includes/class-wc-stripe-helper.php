@@ -9,11 +9,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 4.0.0
  */
 class WC_Stripe_Helper {
+	const SETTINGS_OPTION              = 'woocommerce_stripe_settings';
+
 	const LEGACY_META_NAME_FEE      = 'Stripe Fee';
 	const LEGACY_META_NAME_NET      = 'Net Revenue From Stripe';
 	const META_NAME_FEE             = '_stripe_fee';
 	const META_NAME_NET             = '_stripe_net';
 	const META_NAME_STRIPE_CURRENCY = '_stripe_currency';
+
+
+		/**
+	 * Get the main Stripe settings option.
+	 *
+	 * @param string $method (Optional) The payment method to get the settings from.
+	 * @return array $settings The Stripe settings.
+	 */
+	public static function get_stripe_settings( $method = null ) {
+		$settings = null === $method ? get_option( self::SETTINGS_OPTION, [] ) : get_option( 'woocommerce_stripe_' . $method . '_settings', [] );
+		if ( ! is_array( $settings ) ) {
+			$settings = [];
+		}
+		return $settings;
+	}
+
 
 	/**
 	 * Gets the Stripe currency for order.

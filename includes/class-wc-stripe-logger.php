@@ -56,4 +56,59 @@ class WC_Stripe_Logger {
 			self::$logger->debug( $log_entry, array( 'source' => self::WC_LOG_FILENAME ) );
 		}
 	}
+
+		/**
+	 * Creates a log entry of type error.
+	 *
+	 * @param string $message To send to the log file.
+	 * @return void
+	 */
+	// public static function error( $message ) {
+	// 	if ( ! self::can_log() ) {
+	// 		return;
+	// 	}
+
+	// 	if ( empty( self::$logger ) ) {
+	// 		self::$logger = wc_get_logger();
+	// 	}
+
+	// 	self::$logger->error( $message, [ 'source' => self::WC_LOG_FILENAME ] );
+	// }
+
+	/**
+	 * Creates a log entry of type debug.
+	 *
+	 * @param string $message To send to the log file.
+	 * @return void
+	 */
+	// public static function debug( $message ) {
+	// 	if ( ! self::can_log() ) {
+	// 		return;
+	// 	}
+
+	// 	if ( empty( self::$logger ) ) {
+	// 		self::$logger = wc_get_logger();
+	// 	}
+
+	// 	self::$logger->debug( $message, [ 'source' => self::WC_LOG_FILENAME ] );
+	// }
+
+	/**
+	 * Whether we can log based on settings and filters.
+	 *
+	 * @return boolean
+	 */
+	// private static function can_log(): bool {
+	// 	if ( ! class_exists( 'WC_Logger' ) ) {
+	// 		return false;
+	// 	}
+
+	// 	$settings = WC_Stripe_Helper::get_stripe_settings();
+
+	// 	if ( empty( $settings ) || isset( $settings['logging'] ) && 'yes' !== $settings['logging'] ) {
+	// 		return false;
+	// 	}
+
+	// 	return true;
+	// }
 }

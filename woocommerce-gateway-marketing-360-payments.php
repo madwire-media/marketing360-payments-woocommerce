@@ -5,12 +5,12 @@
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
- * Version: 1.0.4
+ * Version: 1.0.5
  * Requires at least: 6.0
  * Tested up to: 6.2.2
- * Stable tag: 1.0.4
- * WC requires at least: 7.5
- * WC tested up to: 7.8
+ * Stable tag: 1.0.5
+ * WC requires at least: 8.9
+ * WC tested up to: 9.3
  * Text Domain: marketing-360-payments-for-woocommerce
  * Domain Path: /languages
  *
@@ -24,9 +24,9 @@ if (! defined('ABSPATH')) {
  * Required minimums and constants
  */
 define('WC_M360_PAYMENTS_VERSION', '4.5.0');
-define('WC_M360_PAYMENTS_MIN_PHP_VER', '5.6.0');
-define('WC_M360_PAYMENTS_MIN_WC_VER', '3.0');
-define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '3.0');
+define('WC_M360_PAYMENTS_MIN_PHP_VER', '7.3.0');
+define('WC_M360_PAYMENTS_MIN_WC_VER', '7.4');
+define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '7.5');
 define('WC_M360_PAYMENTS_MAIN_FILE', __FILE__);
 define('WC_M360_PAYMENTS_PLUGIN_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 define('WC_M360_PAYMENTS_PLUGIN_PATH', untrailingslashit(plugin_dir_path(__FILE__)));
@@ -60,10 +60,12 @@ function woocommerce_m360_payments_wc_not_supported()
 function woocommerce_gateway_m360_payments_stripe_installed_notice()
 {
     ob_start(); ?>
-		<div class="notice notice-error">
-			<p><?php echo __('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.'); ?></p>
-		</div>
-	<?php echo ob_get_clean();
+<div class="notice notice-error">
+  <p>
+    <?php echo __('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.'); ?>
+  </p>
+</div>
+<?php echo ob_get_clean();
 }
 
 add_action('plugins_loaded', 'woocommerce_gateway_m360_payments_init', 9999);
@@ -163,11 +165,22 @@ function woocommerce_gateway_m360_payments_init()
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-helper.php';
                 include_once dirname(__FILE__) . '/includes/class-wc-stripe-api.php';
                 require_once dirname(__FILE__) . '/includes/abstracts/abstract-wc-stripe-payment-gateway.php';
+                require_once dirname(__FILE__) . '/includes/class-wc-stripe-action-scheduler-service.php';
+                require_once dirname(__FILE__) . '/includes/class-wc-stripe-webhook-state.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-webhook-handler.php';
                 require_once dirname(__FILE__) . '/includes/compat/class-wc-stripe-pre-orders-compat.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-subscriptions-utilities.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-subscriptions.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-pre-orders.php';
+				// require_once dirname( __FILE__ ) . '/includes/compat/class-wc-stripe-subscriptions-legacy-sepa-token-update.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-m360-stripe-apple-pay-registration.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-gateway-stripe.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method.php';
                 require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-payment-request.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-link.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-sepa.php';
                 require_once dirname(__FILE__) . '/includes/compat/class-wc-stripe-subs-compat.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-order-handler.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-payment-tokens.php';
