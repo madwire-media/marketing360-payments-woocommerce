@@ -2,6 +2,8 @@
 /**
  * Marketing 360 API connection class
  */
+// error_reporting(E_ALL & ~E_WARNING); // Report all errors except warnings
+// ini_set('display_errors', 1); // Ensure errors are displayed
 class Marketing_360_Payments
 {
     /**
@@ -109,7 +111,15 @@ class Marketing_360_Payments
      // Gets the full Account Details object.
     public static function get_account_details()
     {
-        return json_decode(get_option('woocommerce_stripe_settings')['account_details']);
+        $stripe_settings = get_option('woocommerce_stripe_settings');
+    
+    // Check if the option exists and is not false
+    if ($stripe_settings && is_array($stripe_settings) && isset($stripe_settings['account_details'])) {
+        return json_decode($stripe_settings['account_details']);
+    }
+
+    // Return null or an appropriate default value if the option is not set
+    return null;
     }
 
     // Overwrites the account details object
@@ -343,23 +353,28 @@ class Marketing_360_Payments
                         continue;
                     }
 
-                    $account->client_id = $details->clientId;
-                    $account->client_secret = $details->secret;
+                    if (isset($details->clientId)) {
+                        $account->client_id = $details->clientId;
+                    }
+                    if (isset($details->secret)) {
+                        $account->client_secret = $details->secret;
+                    }
+                    
                     $account->payload = json_encode($account);
 
                     ob_start(); ?>
-						<div class="m360-account">
-							<?php if ($account->accountIcon): ?>
-								<div class="m360-account-icon">
-									<img src="<?php echo $account->accountIcon; ?>">
-								</div>
-							<?php endif; ?>
-							<div class="m360-account-info">
-								<h2 class="display-name"><?php echo $account->displayName; ?></h2>
-								<h3 class="account-number"><?php echo $account->externalAccountNumber; ?></h3>
-							</div>
-						</div>
-					<?php $account->html = ob_get_clean();
+<div class="m360-account">
+  <?php if ($account->accountIcon): ?>
+  <div class="m360-account-icon">
+    <img src="<?php echo $account->accountIcon; ?>">
+  </div>
+  <?php endif; ?>
+  <div class="m360-account-info">
+    <h2 class="display-name"><?php echo $account->displayName; ?></h2>
+    <h3 class="account-number"><?php echo $account->externalAccountNumber; ?></h3>
+  </div>
+</div>
+<?php $account->html = ob_get_clean();
                 }
             }
 
@@ -402,7 +417,7 @@ class Marketing_360_Payments
         if (array_key_exists('account_details', $settings)) {
             $str = substr($settings['account_details'], 1, -1);
             $u_settings = json_decode($settings['account_details']);
-
+            error_log($settings['account_details']);
             if (!is_null($u_settings)) {
                 $stripe_details = self::get_stripe_details(
                     $u_settings->client_id,
