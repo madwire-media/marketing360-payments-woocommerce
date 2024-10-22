@@ -17,6 +17,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 	 * @var bool
 	 */
 	public $testmode;
+	public $retry_interval;
 
 	/**
 	 * The secret to use when verifying webhooks.

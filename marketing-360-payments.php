@@ -115,6 +115,7 @@ class Marketing_360_Payments
     
     // Check if the option exists and is not false
     if ($stripe_settings && is_array($stripe_settings) && isset($stripe_settings['account_details'])) {
+        error_log(json_encode($stripe_settings));
         return json_decode($stripe_settings['account_details']);
     }
 
@@ -431,6 +432,7 @@ class Marketing_360_Payments
                 $settings['account_details'] = json_encode($u_settings);
             }
         }
+        error_log(json_encode($settings));
 
         return $settings;
     }

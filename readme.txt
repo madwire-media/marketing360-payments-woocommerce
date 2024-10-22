@@ -1,12 +1,13 @@
 === Marketing 360® Payments for WooCommerce ===
 Contributors: marketing360payments
 Tags: ecommerce, woocommerce, payment, payment gateway
-Requires at least: 6.0
-Tested up to: 6.2.2
+Requires at least: 6.4
+Tested up to: 6.6.2
 Requires PHP: 7.0
-Stable tag: 1.0.4
+Stable tag: 1.0.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+WC-Order-Storage-Compatible: yes
 
 Take payments on your WooCommerce store with Marketing 360®, the #1 Marketing Platform® for Small Business.
 
