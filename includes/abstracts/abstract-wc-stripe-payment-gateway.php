@@ -578,11 +578,16 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		$payment_method    = isset( $_POST['payment_method'] ) ? wc_clean( $_POST['payment_method'] ) : 'stripe';
 		$is_token          = false;
 
+		error_log("Checking if source exists");
+		error_log("Stripe key:");
+		error_log(WC_Stripe_API::get_secret_key());
 		// New CC info was entered and we have a new source to process.
 		if ( ! empty( $_POST['stripe_source'] ) ) {
+				error_log("Fetching for source");
 			$source_object = self::get_source_object( wc_clean( $_POST['stripe_source'] ) );
 			$source_id     = $source_object->id;
-
+			error_log("Source was found");
+			error_log($source_object->id);
 			// This checks to see if customer opted to save the payment method to file.
 			$maybe_saved_card = isset( $_POST[ 'wc-' . $payment_method . '-new-payment-method' ] ) && ! empty( $_POST[ 'wc-' . $payment_method . '-new-payment-method' ] );
 

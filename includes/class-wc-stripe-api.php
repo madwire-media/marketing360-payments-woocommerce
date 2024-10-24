@@ -68,22 +68,22 @@ class WC_Stripe_API {
 	 * @since 4.0.0
 	 * @version 4.0.0
 	 */
-	public static function get_user_agent() {
-		$app_info = [
-			'name'       => 'WooCommerce Stripe Gateway',
-			'version'    => WC_M360_PAYMENTS_VERSION,
-			'url'        => 'https://woocommerce.com/products/stripe/',
-			'partner_id' => 'pp_partner_EYuSt9peR0WTMg',
-		];
+	public static function get_user_agent()
+    {
+        $app_info = array(
+            'name'    => 'WooCommerce Marketing 360® Payments',
+            'version' => WC_M360_PAYMENTS_VERSION,
+            'url'     => 'https://app.marketing360.com/',
+        );
 
-		return [
-			'lang'         => 'php',
-			'lang_version' => phpversion(),
-			'publisher'    => 'woocommerce',
-			'uname'        => function_exists( 'php_uname' ) ? php_uname() : PHP_OS,
-			'application'  => $app_info,
-		];
-	}
+        return array(
+            'lang'         => 'php',
+            'lang_version' => phpversion(),
+            'publisher'    => 'woocommerce',
+            'uname'        => php_uname(),
+            'application'  => $app_info,
+        );
+    }
 
 	/**
 	 * Generates the headers to pass to API request.
@@ -91,24 +91,26 @@ class WC_Stripe_API {
 	 * @since 4.0.0
 	 * @version 4.0.0
 	 */
-	public static function get_headers() {
-		$user_agent = self::get_user_agent();
-		$app_info   = $user_agent['application'];
+	public static function get_headers()
+    {
+        $user_agent = self::get_user_agent();
+        $app_info   = $user_agent['application'];
 
-		$headers = apply_filters(
-			'woocommerce_stripe_request_headers',
-			[
-				'Authorization'  => 'Basic ' . base64_encode( self::get_secret_key() . ':' ),
-				'Stripe-Version' => self::STRIPE_API_VERSION,
-			]
-		);
+        // Get a token for the request
+        $token = Marketing_360_Payments::get_authorization();
 
-		// These headers should not be overridden for this gateway.
-		$headers['User-Agent']                 = $app_info['name'] . '/' . $app_info['version'] . ' (' . $app_info['url'] . ')';
-		$headers['X-Stripe-Client-User-Agent'] = wp_json_encode( $user_agent );
-
-		return $headers;
-	}
+        return apply_filters(
+            'woocommerce_stripe_request_headers',
+            array_merge(
+                Marketing_360_Payments::get_m360_payments_request_headers($token),
+                [
+                    'Stripe-Version'             	=> self::STRIPE_API_VERSION,
+                    'User-Agent'                 	=> $app_info['name'] . '/' . $app_info['version'] . ' (' . $app_info['url'] . ')',
+                    'X-Stripe-Client-User-Agent' 	=> json_encode($user_agent),
+                ]
+            )
+        );
+    }
 
 	/**
 	 * Send the request to Stripe's API
@@ -122,60 +124,69 @@ class WC_Stripe_API {
 	 * @return stdClass|array
 	 * @throws WC_Stripe_Exception
 	 */
-	public static function request( $request, $api = 'charges', $method = 'POST', $with_headers = false ) {
-		WC_Stripe_Logger::log( "{$api} request: " . print_r( $request, true ) );
+	public static function request($request, $api = 'charges', $method = 'POST', $with_headers = false)
+    {
+        WC_Stripe_Logger::log("{$api} request: " . print_r($request, true));
 
-		$headers         = self::get_headers();
-		$idempotency_key = '';
+        $headers         = self::get_headers();
+        $idempotency_key = '';
 
-		if ( 'charges' === $api && 'POST' === $method ) {
-			$customer        = ! empty( $request['customer'] ) ? $request['customer'] : '';
-			$source          = ! empty( $request['source'] ) ? $request['source'] : $customer;
-			$idempotency_key = apply_filters( 'wc_stripe_idempotency_key', $request['metadata']['order_id'] . '-' . $source, $request );
+        if ('charges' === $api && 'POST' === $method) {
+            $customer        = ! empty($request['customer']) ? $request['customer'] : '';
+            $source          = ! empty($request['source']) ? $request['source'] : $customer;
+            $idempotency_key = apply_filters('wc_stripe_idempotency_key', $request['metadata']['order_id'] . '-' . $source, $request);
 
-			$headers['Idempotency-Key'] = $idempotency_key;
-		}
+            $headers['Idempotency-Key'] = $idempotency_key;
+        }
+        error_log(("API"));
+    error_log(json_encode(Marketing_360_Payments::get_route($api)));
 
-		$response = wp_safe_remote_post(
-			self::ENDPOINT . $api,
-			[
-				'method'  => $method,
-				'headers' => $headers,
-				'body'    => apply_filters( 'woocommerce_stripe_request_body', $request, $api ),
-				'timeout' => 70,
-			]
-		);
+    error_log(("URL"));
+    error_log(json_encode($api));
+                    error_log(("REQUEST"));
+				error_log(json_encode($request));
+                error_log(("HEADERS"));
+				error_log(json_encode($headers));
+                    error_log(("BODY"));
+                    error_log(json_encode(apply_filters('woocommerce_stripe_request_body', $request, $api)));
 
-		$response_headers = wp_remote_retrieve_headers( $response );
-		// Log the stripe version in the response headers, if present.
-		if ( isset( $response_headers['stripe-version'] ) ) {
-			WC_Stripe_Logger::log( "{$api} response with stripe-version: " . $response_headers['stripe-version'] );
-		}
+        $response = wp_safe_remote_post(
+            Marketing_360_Payments::get_route($api),
+            array(
+                'method'  => $method,
+                'headers' => $headers,
+                'body'    => apply_filters('woocommerce_stripe_request_body', $request, $api),
+                'timeout' => 70,
+            )
+        );
 
-		if ( is_wp_error( $response ) || empty( $response['body'] ) ) {
-			WC_Stripe_Logger::log(
-				'Error Response: ' . print_r( $response, true ) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(
-					[
-						'api'             => $api,
-						'request'         => $request,
-						'idempotency_key' => $idempotency_key,
-					],
-					true
-				)
-			);
+				error_log("REQUEST METHOD");
+				error_log(json_encode($response));
 
-			throw new WC_Stripe_Exception( print_r( $response, true ), __( 'There was a problem connecting to the Stripe API endpoint.', 'woocommerce-gateway-stripe' ) );
-		}
+        if (is_wp_error($response) || empty($response['body'])) {
+            WC_Stripe_Logger::log(
+                'Error Response: ' . print_r($response, true) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(
+                    array(
+                        'api'             => $api,
+                        'request'         => $request,
+                        'idempotency_key' => $idempotency_key,
+                    ),
+                    true
+                )
+            );
 
-		if ( $with_headers ) {
-			return [
-				'headers' => $response_headers,
-				'body'    => json_decode( $response['body'] ),
-			];
-		}
+            throw new WC_Stripe_Exception(print_r($response, true), __('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
+        }
 
-		return json_decode( $response['body'] );
-	}
+        if ($with_headers) {
+            return array(
+                'headers' => wp_remote_retrieve_headers($response),
+                'body'    => json_decode($response['body']),
+            );
+        }
+
+        return json_decode($response['body']);
+    }
 
 	/**
 	 * Retrieve API endpoint.
@@ -184,25 +195,26 @@ class WC_Stripe_API {
 	 * @version 4.0.0
 	 * @param string $api
 	 */
-	public static function retrieve( $api ) {
-		WC_Stripe_Logger::log( "{$api}" );
+	public static function retrieve($api)
+    {
+        WC_Stripe_Logger::log("{$api}");
 
-		$response = wp_safe_remote_get(
-			self::ENDPOINT . $api,
-			[
-				'method'  => 'GET',
-				'headers' => self::get_headers(),
-				'timeout' => 70,
-			]
-		);
+        $response = wp_safe_remote_get(
+            Marketing_360_Payments::get_route($api),
+            array(
+                'method'  => 'GET',
+                'headers' => self::get_headers(),
+                'timeout' => 70,
+            )
+        );
 
-		if ( is_wp_error( $response ) || empty( $response['body'] ) ) {
-			WC_Stripe_Logger::log( 'Error Response: ' . print_r( $response, true ) );
-			return new WP_Error( 'stripe_error', __( 'There was a problem connecting to the Stripe API endpoint.', 'woocommerce-gateway-stripe' ) );
-		}
+        if (is_wp_error($response) || empty($response['body'])) {
+            WC_Stripe_Logger::log('Error Response: ' . print_r($response, true));
+            return new WP_Error('stripe_error', __('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
+        }
 
-		return json_decode( $response['body'] );
-	}
+        return json_decode($response['body']);
+    }
 
 	/**
 	 * Send the request to Stripe's API with level 3 data generated
@@ -220,75 +232,153 @@ class WC_Stripe_API {
 	 *
 	 * @return stdClass|array The response
 	 */
-	public static function request_with_level3_data( $request, $api, $level3_data, $order ) {
-		// 1. Do not add level3 data if the array is empty.
-		// 2. Do not add level3 data if there's a transient indicating that level3 was
-		// not accepted by Stripe in the past for this account.
-		// 3. Do not try to add level3 data if merchant is not based in the US.
-		// https://stripe.com/docs/level3#level-iii-usage-requirements
-		// (Needs to be authenticated with a level3 gated account to see above docs).
-		if (
-			empty( $level3_data ) ||
-			get_transient( 'wc_stripe_level3_not_allowed' ) ||
-			'US' !== WC()->countries->get_base_country()
-		) {
-			return self::request(
-				$request,
-				$api
-			);
-		}
+	public static function request_with_level3_data($request, $api, $level3_data, $order)
+    {
+        // Do not add level3 data it's the array is empty.
+        $level3_data = [];
+        if (empty($level3_data)) {
+            return self::request(
+                $request,
+                $api
+            );
+        }
 
-		// Add level 3 data to the request.
-		$request['level3'] = $level3_data;
+        // If there's a transient indicating that level3 data was not accepted by
+        // Stripe in the past for this account, do not try to add level3 data.
+        if (get_transient('wc_stripe_level3_not_allowed')) {
+            return self::request(
+                $request,
+                $api
+            );
+        }
 
-		$result = self::request(
-			$request,
-			$api
-		);
+        // Add level 3 data to the request.
+        $request['level3'] = $level3_data;
 
-		$is_level3_param_not_allowed = (
-			isset( $result->error )
-			&& isset( $result->error->code )
-			&& 'parameter_unknown' === $result->error->code
-			&& isset( $result->error->param )
-			&& 'level3' === $result->error->param
-		);
+        $result = self::request(
+            $request,
+            $api
+        );
 
-		$is_level_3data_incorrect = (
-			isset( $result->error )
-			&& isset( $result->error->type )
-			&& 'invalid_request_error' === $result->error->type
-		);
+        $is_level3_param_not_allowed = (
+            isset($result->error)
+            && isset($result->error->code)
+            && 'parameter_unknown' === $result->error->code
+            && isset($result->error->param)
+            && 'level3' === $result->error->param
+        );
 
-		if ( $is_level3_param_not_allowed ) {
-			// Set a transient so that future requests do not add level 3 data.
-			// Transient is set to expire in 3 months, can be manually removed if needed.
-			set_transient( 'wc_stripe_level3_not_allowed', true, 3 * MONTH_IN_SECONDS );
-		} elseif ( $is_level_3data_incorrect ) {
-			// Log the issue so we could debug it.
-			WC_Stripe_Logger::log(
-				'Level3 data sum incorrect: ' . PHP_EOL
-				. print_r( $result->error->message, true ) . PHP_EOL
-				. print_r( 'Order line items: ', true ) . PHP_EOL
-				. print_r( $order->get_items(), true ) . PHP_EOL
-				. print_r( 'Order shipping amount: ', true ) . PHP_EOL
-				. print_r( $order->get_shipping_total(), true ) . PHP_EOL
-				. print_r( 'Order currency: ', true ) . PHP_EOL
-				. print_r( $order->get_currency(), true )
-			);
-		}
+        $is_level_3data_incorrect = (
+            isset($result->error)
+            && isset($result->error->type)
+            && 'invalid_request_error' === $result->error->type
+        );
 
-		// Make the request again without level 3 data.
-		if ( $is_level3_param_not_allowed || $is_level_3data_incorrect ) {
-			unset( $request['level3'] );
-			return self::request(
-				$request,
-				$api
-			);
-		}
+        if ($is_level3_param_not_allowed) {
+            // Set a transient so that future requests do not add level 3 data.
+            // Transient is set to expire in 3 months, can be manually removed if needed.
+            set_transient('wc_stripe_level3_not_allowed', true, 3 * MONTH_IN_SECONDS);
+        } elseif ($is_level_3data_incorrect) {
+            // Log the issue so we could debug it.
+            WC_Stripe_Logger::log(
+                'Level3 data sum incorrect: ' . PHP_EOL
+                . print_r($result->error->message, true) . PHP_EOL
+                . print_r('Order line items: ', true) . PHP_EOL
+                . print_r($order->get_items(), true) . PHP_EOL
+                . print_r('Order shipping amount: ', true) . PHP_EOL
+                . print_r($order->get_shipping_total(), true) . PHP_EOL
+                . print_r('Order currency: ', true) . PHP_EOL
+                . print_r($order->get_currency(), true)
+            );
+        }
 
-		return $result;
-	}
+        // Make the request again without level 3 data.
+        if ($is_level3_param_not_allowed || $is_level_3data_incorrect) {
+            unset($request['level3']);
+            return WC_Stripe_API::request(
+                $request,
+                $api
+            );
+        }
+
+        return $result;
+    }
+
+
+		    /**
+     * Send the registration request to Stripe's API for Apple Pay
+     *
+     * @since 3.1.0
+     * @version 4.0.6
+     * @param array $request
+     * @param string $api
+     * @param string $method
+     * @param bool $with_headers To get the response with headers.
+     * @return stdClass|array
+     * @throws WC_Stripe_Exception
+     */
+    public static function registerApplePaySubdomain($request, $api = 'charges', $method = 'POST', $with_headers = false)
+    {
+        WC_Stripe_Logger::log("{$api} registerApplePaySubdomain: " . print_r($request, true));
+
+        $headers         = self::get_headers();
+        $idempotency_key = '';
+
+        /* 		if ( 'charges' === $api && 'POST' === $method ) {
+                    $customer        = ! empty( $request['customer'] ) ? $request['customer'] : '';
+                    $source          = ! empty( $request['source'] ) ? $request['source'] : $customer;
+                    $idempotency_key = apply_filters( 'wc_stripe_idempotency_key', $request['metadata']['order_id'] . '-' . $source, $request );
+
+                    $headers['Idempotency-Key'] = $idempotency_key;
+                }
+
+         */
+        echo '<pre>';
+        print_r(
+            array(Marketing_360_Payments::get_route($api),
+            array(
+                'method'  => $method,
+                'headers' => $headers,
+                'body'    => apply_filters('woocommerce_stripe_request_body', $request, $api),
+                'timeout' => 70,
+            ))
+        );
+        echo '</pre>';
+        die();
+        $response = wp_safe_remote_post(
+            Marketing_360_Payments::get_route($api),
+            array(
+                'method'  => $method,
+                'headers' => $headers,
+                'body'    => apply_filters('woocommerce_stripe_request_body', $request, $api),
+                'timeout' => 70,
+            )
+        );
+
+        if (is_wp_error($response) || empty($response['body'])) {
+            WC_Stripe_Logger::log(
+                'Error Response: ' . print_r($response, true) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(
+                    array(
+                        'api'             => $api,
+                        'request'         => $request,
+                        'idempotency_key' => $idempotency_key,
+                    ),
+                    true
+                )
+            );
+
+            throw new WC_Stripe_Exception(print_r($response, true), __('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
+        }
+
+        if ($with_headers) {
+            return array(
+                'headers' => wp_remote_retrieve_headers($response),
+                'body'    => json_decode($response['body']),
+            );
+        }
+
+        return json_decode($response['body']);
+    }
 
 	/**
 	 * Returns a payment method object from Stripe given an ID. Accepts both 'src_xxx' and 'pm_xxx'

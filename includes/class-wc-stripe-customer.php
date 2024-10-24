@@ -476,7 +476,7 @@ class WC_Stripe_Customer {
 				[
 					'limit' => 100,
 				],
-				'customers/' . $this->get_id() . '/payment_methods',
+				'customers/' . $this->get_id() . '/sources',
 				'GET'
 			);
 

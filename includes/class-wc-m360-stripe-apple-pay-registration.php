@@ -123,7 +123,7 @@ class WC_Stripe_Apple_Pay_Registration {
 	 */
 	private function verify_hosted_domain_association_file_is_up_to_date() {
 		// Contents of domain association file from plugin dir.
-		$new_contents = @file_get_contents( WC_STRIPE_PLUGIN_PATH . '/' . self::DOMAIN_ASSOCIATION_FILE_NAME ); // @codingStandardsIgnoreLine
+		$new_contents = @file_get_contents( WC_M360_PAYMENTS_PLUGIN_PATH . '/' . self::DOMAIN_ASSOCIATION_FILE_NAME ); // @codingStandardsIgnoreLine
 		// Get file contents from local path and remote URL and check if either of which matches.
 		$fullpath        = untrailingslashit( ABSPATH ) . '/' . self::DOMAIN_ASSOCIATION_FILE_DIR . '/' . self::DOMAIN_ASSOCIATION_FILE_NAME;
 		$local_contents  = @file_get_contents( $fullpath ); // @codingStandardsIgnoreLine
@@ -150,7 +150,7 @@ class WC_Stripe_Apple_Pay_Registration {
 			}
 		}
 
-		if ( ! @copy( WC_STRIPE_PLUGIN_PATH . '/' . self::DOMAIN_ASSOCIATION_FILE_NAME, $fullpath ) ) { // @codingStandardsIgnoreLine
+		if ( ! @copy( WC_M360_PAYMENTS_PLUGIN_PATH . '/' . self::DOMAIN_ASSOCIATION_FILE_NAME, $fullpath ) ) { // @codingStandardsIgnoreLine
 			return __( 'Unable to copy domain association file to domain root.', 'woocommerce-gateway-stripe' );
 		}
 	}
@@ -214,7 +214,7 @@ class WC_Stripe_Apple_Pay_Registration {
 			return;
 		}
 
-		$path = WC_STRIPE_PLUGIN_PATH . '/' . self::DOMAIN_ASSOCIATION_FILE_NAME;
+		$path = WC_M360_PAYMENTS_PLUGIN_PATH . '/' . self::DOMAIN_ASSOCIATION_FILE_NAME;
 		header( 'Content-Type: text/plain;charset=utf-8' );
 		echo esc_html( file_get_contents( $path ) );
 		exit;
@@ -401,16 +401,16 @@ class WC_Stripe_Apple_Pay_Registration {
 		);
 
 		?>
-		<div class="error stripe-apple-pay-message">
-			<?php if ( $empty_notice ) : ?>
-				<p><?php echo esc_html( $verification_failed_without_error ); ?></p>
-			<?php else : ?>
-				<p><?php echo esc_html( $verification_failed_with_error ); ?></p>
-				<p><i><?php echo wp_kses( make_clickable( esc_html( $this->apple_pay_verify_notice ) ), $allowed_html ); ?></i></p>
-			<?php endif; ?>
-			<p><?php echo $check_log_text; ?></p>
-		</div>
-		<?php
+<div class="error stripe-apple-pay-message">
+  <?php if ( $empty_notice ) : ?>
+  <p><?php echo esc_html( $verification_failed_without_error ); ?></p>
+  <?php else : ?>
+  <p><?php echo esc_html( $verification_failed_with_error ); ?></p>
+  <p><i><?php echo wp_kses( make_clickable( esc_html( $this->apple_pay_verify_notice ) ), $allowed_html ); ?></i></p>
+  <?php endif; ?>
+  <p><?php echo $check_log_text; ?></p>
+</div>
+<?php
 	}
 }
 
