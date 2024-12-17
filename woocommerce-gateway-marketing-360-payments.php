@@ -23,7 +23,7 @@ if (! defined('ABSPATH')) {
 /**
  * Required minimums and constants
  */
-define('WC_M360_PAYMENTS_VERSION', '8.7.0');
+define('WC_M360_PAYMENTS_VERSION', '1.0.7');
 define('WC_M360_PAYMENTS_MIN_PHP_VER', '7.3.0');
 define('WC_M360_PAYMENTS_MIN_WC_VER', '7.4');
 define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '7.5');
