@@ -140,7 +140,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         $this->title                = $this->get_option('title');
         $this->description          = $this->get_option('description');
         $this->enabled              = $this->get_option('enabled');
-        $this->testmode             = false;//'yes' === $this->get_option( 'testmode' );
+        $this->testmode             = 'yes' === $this->get_option( 'testmode' );
         $this->inline_cc_form       = 'yes' === $this->get_option('inline_cc_form');
         $this->capture              = 'yes' === $this->get_option('capture', 'yes');
         $this->statement_descriptor = WC_Stripe_Helper::clean_statement_descriptor($this->get_option('statement_descriptor'));
@@ -180,27 +180,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
         // Callback to add the Stripe details to the M360 Account details after clicking "Save Changes" in the Payment Gateway Settings Screen
         add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, "Marketing_360_Payments::add_stripe_details_callback");
-        if(isset($_GET['showdetails']) && $_GET['showdetails']) {
-            echo '<pre>';
-            Marketing_360_Payments::print_stripe_details();
-            echo '</pre>';
-        }
-		
-        if(isset($_GET['registerdomain']) && $_GET['registerdomain']) {
-            echo '<pre>';
-            Marketing_360_Payments::register_domain();
-            echo '</pre>';
-        }
-
-        if(isset($_GET['getresults']) && $_GET['getresults']) {
-            echo '<pre>';
-            global $wpdb;
-           print_r($wpdb->get_results("SELECT * FROM `wp_woocommerce_payment_tokens` WHERE gateway_id='stripe'"));
-            echo '</pre>';
-            die();
-        }
-
-        
     }
 
     /**
@@ -1285,91 +1264,73 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     }
 
     /**
-     * Checks whether new keys are being entered when saving options.
+     * Saves payment gateway settings and fetches fresh Stripe details from M360 API.
      */
-    /*public function process_admin_options() {
-
-        $post_data = $this->get_post_data();
-
-        // Need to reach out to get the publishable key
-        if(
-            !empty($post_data['woocommerce_stripe_client_id']) &&
-            !empty($post_data['woocommerce_stripe_client_secret']) &&
-            !empty($post_data['woocommerce_stripe_m360_account']) )
-        {
-            $result = Marketing_360_Payments::setup($post_data['woocommerce_stripe_client_id'], $post_data['woocommerce_stripe_client_secret'], $post_data['woocommerce_stripe_m360_account']);
-        }
-
-        $m360_options = get_option('woocommerce_stripe_settings');
-
-        // If we disable payments we should remove the webhooks so we don't continue to get them
-        if( !empty($m360_options) && isset($m360_options['enabled']) && $m360_options['enabled'] == 'yes' ) {
-            // if array key is not preset, it means enabled was unchecked
-            if( ! array_key_exists( 'woocommerce_stripe_enabled', $post_data )) {
-                $token = Marketing_360_Payments::get_authorization();
-                if( isset( $m360_options['m360_webhook_id'] ) && !empty( $token ) ) {
-                    Marketing_360_Payments::remove_webhooks( $token, $m360_options['m360_webhook_id'] );
-                    unset($m360_options['m360_webhook_id']);
-                    unset($m360_options['m360_webhook_secret']);
-                    update_option('woocommerce_stripe_settings', $m360_options);
-                }
-            }
-        }
+    public function process_admin_options() {
+        // Clear cached token so get_stripe_details uses fresh credentials
+        delete_option('m360_client_token');
+        delete_option('m360_client_token_expiration');
 
         parent::process_admin_options();
 
-    }*/
+        // Fetch and store stripeKey/stripeAccountId after settings are saved
+        $settings = get_option('woocommerce_stripe_settings', []);
+        $updated = Marketing_360_Payments::add_stripe_details_callback($settings);
+        if ($updated !== $settings) {
+            update_option('woocommerce_stripe_settings', $updated);
+        }
+    }
 
-    // public function validate_m360_account_field( $key, $value ) {
-    // 	if( empty( $value ) ) {
-    // 		throw new Exception( __( 'Missing Marketing 360 Account', 'marketing-360-payments-for-woocommerce' ) );
-    // 	}
-    // 	return $value;
-    // }
+    public function validate_m360_account_field( $key, $value ) {
+        if( empty( $value ) ) {
+            throw new Exception( __( 'Missing Marketing 360 Account', 'marketing-360-payments-for-woocommerce' ) );
+        }
+        return $value;
+    }
 
-    // public function validate_client_id_field( $key, $value ) {
-    // 	if( empty( $value ) ) {
-    // 		throw new Exception( __( 'Missing Marketing 360 Client ID', 'marketing-360-payments-for-woocommerce' ) );
-    // 	}
-    // 	return $value;
-    // }
+    public function validate_client_id_field( $key, $value ) {
+        if( empty( $value ) ) {
+            throw new Exception( __( 'Missing Marketing 360 Client ID', 'marketing-360-payments-for-woocommerce' ) );
+        }
+        return $value;
+    }
 
-    // public function validate_client_secret_field( $key, $value ) {
-    // 	if( empty( $value ) ) {
-    // 		throw new Exception( __( 'Missing Marketing 360 Client Secret', 'marketing-360-payments-for-woocommerce' ) );
-    // 	}
-    // 	return $value;
-    // }
+    public function validate_client_secret_field( $key, $value ) {
+        if( empty( $value ) ) {
+            throw new Exception( __( 'Missing Marketing 360 Client Secret', 'marketing-360-payments-for-woocommerce' ) );
+        }
+        return $value;
+    }
 
-    // public function validate_publishable_key_field( $key, $value ) {
-    // 	$value = $this->validate_text_field( $key, $value );
-    // 	if ( ! empty( $value ) && ! preg_match( '/^pk_live_/', $value ) ) {
-    // 		throw new Exception( __( 'The "Live Publishable Key" should start with "pk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
-    // 	}
-    // 	return $value;
-    // }
+    public function validate_publishable_key_field( $key, $value ) {
+        $value = $this->validate_text_field( $key, $value );
+        if ( ! empty( $value ) && ! preg_match( '/^pk_live_/', $value ) ) {
+            throw new Exception( __( 'The "Live Publishable Key" should start with "pk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+        }
+        return $value;
+    }
 
-    // public function validate_secret_key_field( $key, $value ) {
-    // 	$value = $this->validate_text_field( $key, $value );
-    // 	if ( ! empty( $value ) && ! preg_match( '/^[rs]k_live_/', $value ) ) {
-    // 		throw new Exception( __( 'The "Live Secret Key" should start with "sk_live" or "rk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
-    // 	}
-    // 	return $value;
-    // }
+    public function validate_secret_key_field( $key, $value ) {
+        $value = $this->validate_text_field( $key, $value );
+        if ( ! empty( $value ) && ! preg_match( '/^[rs]k_live_/', $value ) ) {
+            throw new Exception( __( 'The "Live Secret Key" should start with "sk_live" or "rk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+        }
+        return $value;
+    }
 
-    // public function validate_test_publishable_key_field( $key, $value ) {
-    // 	$value = $this->validate_text_field( $key, $value );
-    // 	if ( ! empty( $value ) && ! preg_match( '/^pk_test_/', $value ) ) {
-    // 		throw new Exception( __( 'The "Test Publishable Key" should start with "pk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
-    // 	}
-    // 	return $value;
-    // }
+    public function validate_test_publishable_key_field( $key, $value ) {
+        $value = $this->validate_text_field( $key, $value );
+        if ( ! empty( $value ) && ! preg_match( '/^pk_test_/', $value ) ) {
+            throw new Exception( __( 'The "Test Publishable Key" should start with "pk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+        }
+        return $value;
+    }
 
-    // public function validate_test_secret_key_field( $key, $value ) {
-    // 	$value = $this->validate_text_field( $key, $value );
-    // 	if ( ! empty( $value ) && ! preg_match( '/^[rs]k_test_/', $value ) ) {
-    // 		throw new Exception( __( 'The "Test Secret Key" should start with "sk_test" or "rk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
-    // 	}
-    // 	return $value;
-    // }
+    public function validate_test_secret_key_field( $key, $value ) {
+        $value = $this->validate_text_field( $key, $value );
+        if ( ! empty( $value ) && ! preg_match( '/^[rs]k_test_/', $value ) ) {
+            throw new Exception( __( 'The "Test Secret Key" should start with "sk_test" or "rk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+        }
+        return $value;
+    }
 }

@@ -111,7 +111,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 			// Verify the timestamp.
 			$timestamp = intval( $request_headers['MARKETING360-TIMESTAMP'] );
 			if ( abs( $timestamp - time() ) > 5 * MINUTE_IN_SECONDS ) {
-				return;
+				return false;
 			}
 
 			// Generate the expected signature.
@@ -119,7 +119,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 			$expected_signature = hash_hmac( 'sha256', $signed_payload, $this->secret );
 
 			// Check if the expected signature is present.
-			if ( $expected_signature == $request_headers['MARKETING360-SIGNATURE'] ) {
+			if ( ! hash_equals( $expected_signature, $request_headers['MARKETING360-SIGNATURE'] ) ) {
 				return false;
 			}
 		}
