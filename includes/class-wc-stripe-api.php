@@ -235,7 +235,6 @@ class WC_Stripe_API {
 	public static function request_with_level3_data($request, $api, $level3_data, $order)
     {
         // Do not add level3 data it's the array is empty.
-        $level3_data = [];
         if (empty($level3_data)) {
             return self::request(
                 $request,
@@ -324,27 +323,14 @@ class WC_Stripe_API {
         $headers         = self::get_headers();
         $idempotency_key = '';
 
-        /* 		if ( 'charges' === $api && 'POST' === $method ) {
-                    $customer        = ! empty( $request['customer'] ) ? $request['customer'] : '';
-                    $source          = ! empty( $request['source'] ) ? $request['source'] : $customer;
-                    $idempotency_key = apply_filters( 'wc_stripe_idempotency_key', $request['metadata']['order_id'] . '-' . $source, $request );
+        if ( 'charges' === $api && 'POST' === $method ) {
+            $customer        = ! empty( $request['customer'] ) ? $request['customer'] : '';
+            $source          = ! empty( $request['source'] ) ? $request['source'] : $customer;
+            $idempotency_key = apply_filters( 'wc_stripe_idempotency_key', $request['metadata']['order_id'] . '-' . $source, $request );
 
-                    $headers['Idempotency-Key'] = $idempotency_key;
-                }
+            $headers['Idempotency-Key'] = $idempotency_key;
+        }
 
-         */
-        echo '<pre>';
-        print_r(
-            array(Marketing_360_Payments::get_route($api),
-            array(
-                'method'  => $method,
-                'headers' => $headers,
-                'body'    => apply_filters('woocommerce_stripe_request_body', $request, $api),
-                'timeout' => 70,
-            ))
-        );
-        echo '</pre>';
-        die();
         $response = wp_safe_remote_post(
             Marketing_360_Payments::get_route($api),
             array(

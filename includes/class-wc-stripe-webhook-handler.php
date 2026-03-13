@@ -147,25 +147,27 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 			return WC_Stripe_Webhook_State::VALIDATION_FAILED_EMPTY_SECRET;
 		}
 
-		// Check for a valid signature.
-		$signature_format = '/^t=(?P<timestamp>\d+)(?P<signatures>(,v\d+=[a-z0-9]+){1,2})$/';
-		if ( empty( $request_headers['STRIPE-SIGNATURE'] ) || ! preg_match( $signature_format, $request_headers['STRIPE-SIGNATURE'], $matches ) ) {
-			return WC_Stripe_Webhook_State::VALIDATION_FAILED_SIGNATURE_INVALID;
-		}
+		if ( ! empty( $this->secret ) ) {
 
-		// Verify the timestamp.
-		$timestamp = intval( $matches['timestamp'] );
-		if ( abs( $timestamp - time() ) > 5 * MINUTE_IN_SECONDS ) {
-			return WC_Stripe_Webhook_State::VALIDATION_FAILED_TIMESTAMP_MISMATCH;
-		}
+			// Check for a valid signature.
+			if ( empty( $request_headers['MARKETING360-SIGNATURE'] ) ) {
+				return false;
+			}
 
-		// Generate the expected signature.
-		$signed_payload     = $timestamp . '.' . $request_body;
-		$expected_signature = hash_hmac( 'sha256', $signed_payload, $this->secret );
+			// Verify the timestamp.
+			$timestamp = intval( $request_headers['MARKETING360-TIMESTAMP'] );
+			if ( abs( $timestamp - time() ) > 5 * MINUTE_IN_SECONDS ) {
+				return false;
+			}
 
-		// Check if the expected signature is present.
-		if ( ! preg_match( '/,v\d+=' . preg_quote( $expected_signature, '/' ) . '/', $matches['signatures'] ) ) {
-			return WC_Stripe_Webhook_State::VALIDATION_FAILED_SIGNATURE_MISMATCH;
+			// Generate the expected signature.
+			$signed_payload     = $timestamp . '.' . $request_body;
+			$expected_signature = hash_hmac( 'sha256', $signed_payload, $this->secret );
+
+			// Check if the expected signature is present.
+			if ( ! hash_equals( $expected_signature, $request_headers['MARKETING360-SIGNATURE'] ) ) {
+				return false;
+			}
 		}
 
 		return WC_Stripe_Webhook_State::VALIDATION_SUCCEEDED;

@@ -202,22 +202,20 @@ jQuery(function ($) {
 							<p>Currently connected to Marketing 360® account: ${account.externalAccountNumber} ${account.displayName}. Please click "Save Changes" to enable payments. <a href="#" onclick="m360SignOut()">Disconnect Account</a></p>
 						`;
 
-              $("#wc-m360-notice-box").html(notice);
-              $("#wc-m360-api-auth").text(
-                "Connect to a different Marketing 360® account"
-              );
-            });
-            accountsList.append(html);
-          });
-        }
-      })
-      .error(function (response) {
-        $("#alert-error").text(response.responseText);
+$("#wc-m360-notice-box").html(notice);
+$("#wc-m360-api-auth").text('Connect to a different Marketing 360® account');
 
-        $("#wc-m360-signin-popup-login").val("Connect");
-        console.error(response);
-      });
-  }
+accountsList.append(html);
+})
+})
+.error(function (response) {
+    var message = response.responseText
+        ? response.responseText
+        : 'Connection failed (status ' + response.status + '). Please check your credentials and try again.';
+
+    $('#wc-m360-signin-popup-alert-error').text(message).show();
+    $('#wc-m360-signin-popup-login').val('Connect');
+    console.error(response);
 });
 
 function m360SignOut() {
