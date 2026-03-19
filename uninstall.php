@@ -8,6 +8,11 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+if ( ! class_exists( 'Marketing_360_Payments' ) ) {
+	require_once dirname( __FILE__ ) . '/marketing-360-payments.php';
+}
+
+
 /**
  * Remove webhooks from Marketing 360 Payments
  */
@@ -32,4 +37,3 @@ if ( defined( 'WC_REMOVE_ALL_DATA' ) && true === WC_REMOVE_ALL_DATA ) {
 	delete_option( 'wc_stripe_show_keys_notice' );
 	delete_option( 'wc_stripe_version' );
 }
-

@@ -5,12 +5,12 @@
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
- * Version: 2.0
- * Requires at least: 6.0
- * Tested up to: 6.9.4
- * Stable tag: 2.0
- * WC requires at least: 7.5
- * WC tested up to: 9.4
+ * Version: 1.0.6
+ * Requires at least: 6.4
+ * Tested up to: 6.6.2
+ * Stable tag: 1.0.6
+ * WC requires at least: 8.9
+ * WC tested up to: 9.3
  * Text Domain: marketing-360-payments-for-woocommerce
  * Domain Path: /languages
  *
@@ -23,10 +23,10 @@ if (! defined('ABSPATH')) {
 /**
  * Required minimums and constants
  */
-define('WC_M360_PAYMENTS_VERSION', '2.0');
-define('WC_M360_PAYMENTS_MIN_PHP_VER', '5.6.0');
-define('WC_M360_PAYMENTS_MIN_WC_VER', '3.0');
-define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '3.0');
+define('WC_M360_PAYMENTS_VERSION', '8.7.0');
+define('WC_M360_PAYMENTS_MIN_PHP_VER', '7.3.0');
+define('WC_M360_PAYMENTS_MIN_WC_VER', '7.4');
+define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '7.5');
 define('WC_M360_PAYMENTS_MAIN_FILE', __FILE__);
 define('WC_M360_PAYMENTS_PLUGIN_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 define('WC_M360_PAYMENTS_PLUGIN_PATH', untrailingslashit(plugin_dir_path(__FILE__)));
@@ -60,10 +60,12 @@ function woocommerce_m360_payments_wc_not_supported()
 function woocommerce_gateway_m360_payments_stripe_installed_notice()
 {
     ob_start(); ?>
-		<div class="notice notice-error">
-			<p><?php echo __('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.'); ?></p>
-		</div>
-	<?php echo ob_get_clean();
+<div class="notice notice-error">
+  <p>
+    <?php echo __('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.'); ?>
+  </p>
+</div>
+<?php echo ob_get_clean();
 }
 
 add_action('plugins_loaded', 'woocommerce_gateway_m360_payments_init', 9999);
@@ -93,6 +95,13 @@ function woocommerce_gateway_m360_payments_init()
              */
             private static $instance;
 
+			/**
+			 * The main Stripe gateway instance. Use get_main_stripe_gateway() to access it.
+			 *
+			 * @var null|WC_Stripe_Payment_Gateway
+			 */
+			protected $stripe_gateway = null;
+
             /**
              * Returns the *Singleton* instance of this class.
              *
@@ -105,6 +114,28 @@ function woocommerce_gateway_m360_payments_init()
                 }
                 return self::$instance;
             }
+
+
+			/**
+			 * Returns the main Stripe payment gateway class instance.
+			 *
+			 * @return WC_Stripe_Payment_Gateway
+			 */
+			public function get_main_stripe_gateway() {
+				if ( ! is_null( $this->stripe_gateway ) ) {
+					return $this->stripe_gateway;
+				}
+
+				if ( WC_Stripe_Feature_Flags::is_upe_preview_enabled() && WC_Stripe_Feature_Flags::is_upe_checkout_enabled() ) {
+					$this->stripe_gateway = new WC_Stripe_UPE_Payment_Gateway();
+
+					return $this->stripe_gateway;
+				}
+
+				$this->stripe_gateway = new WC_Gateway_Stripe();
+
+				return $this->stripe_gateway;
+			}
 
             /**
              * Private clone method to prevent cloning of the instance of the
@@ -132,6 +163,14 @@ function woocommerce_gateway_m360_payments_init()
              */
             public function __construct()
             {
+                if(isset($_GET['show_woocommerce_stripe_settings'])) 
+                {
+                    echo '<pre>'; 
+                   add_filter( 'option_woocommerce_stripe_settings', array( $this, 'temp_woocommerce_stripe_settings') );
+                    print_r(get_option('woocommerce_stripe_settings')); 
+                    echo '</pre>';
+                }
+
                 add_action('admin_init', array( $this, 'install' ));
                 $this->init();
             }
@@ -150,21 +189,37 @@ function woocommerce_gateway_m360_payments_init()
 
                 require_once dirname(__FILE__) . '/marketing-360-payments.php';
 
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-feature-flags.php';
+				require_once dirname( __FILE__ ) . '/includes/class-wc-stripe-upe-compatibility.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-exception.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-logger.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-helper.php';
                 include_once dirname(__FILE__) . '/includes/class-wc-stripe-api.php';
                 require_once dirname(__FILE__) . '/includes/abstracts/abstract-wc-stripe-payment-gateway.php';
+                require_once dirname(__FILE__) . '/includes/class-wc-stripe-action-scheduler-service.php';
+                require_once dirname(__FILE__) . '/includes/class-wc-stripe-webhook-state.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-webhook-handler.php';
                 require_once dirname(__FILE__) . '/includes/compat/class-wc-stripe-pre-orders-compat.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-subscriptions-utilities.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-subscriptions.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/trait-wc-stripe-pre-orders.php';
+				require_once dirname( __FILE__ ) . '/includes/compat/class-wc-stripe-woo-compat-utils.php';
+				// require_once dirname( __FILE__ ) . '/includes/compat/class-wc-stripe-subscriptions-legacy-sepa-token-update.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-m360-stripe-apple-pay-registration.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-gateway-stripe.php';
+				require_once dirname( __FILE__ ) . '/includes/payment-methods/class-wc-stripe-upe-payment-gateway.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method.php';
                 require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-payment-request.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-cash-app-pay.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-cc.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-link.php';
+                require_once dirname(__FILE__) . '/includes/payment-methods/class-wc-stripe-upe-payment-method-sepa.php';
                 require_once dirname(__FILE__) . '/includes/compat/class-wc-stripe-subs-compat.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-order-handler.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-payment-tokens.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-customer.php';
                 require_once dirname(__FILE__) . '/includes/class-wc-stripe-intent-controller.php';
+				require_once dirname( __FILE__ ) . '/includes/admin/class-wc-stripe-inbox-notes.php';
 
                 if (is_admin()) {
                     require_once dirname(__FILE__) . '/includes/admin/class-wc-stripe-admin-notices.php';
@@ -195,7 +250,25 @@ function woocommerce_gateway_m360_payments_init()
                 }, 10);
 
             }
-
+            function temp_woocommerce_stripe_settings( $value ) {
+                $value['payment_request'] = 'yes';
+ /*                 $value['publishable_key'] = 'pk_live_51MOZw8Fj0Vn6rFSLpYmEexsuvSdkNlk3ILJizEMC1NlHEaeVtO19sHAaTwZ2E0yRZ5gUGBBgD09kPYcUBkAbWJlJ001gNVGjju';
+                $value['secret_key'] = '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';
+               $value['webhook_secret'] = 'we_1MP6TKFj0Vn6rFSL77YPigSA';
+                            $value['testmode'] = 'no';
+                $value['apple_pay_verified_domain'] = 'fd9a-52-6-168-200.ngrok.io';
+                $value['apple_pay_domain_set'] = 'yes';
+                // [statement_descriptor] => 
+                $value['title_upe'] = '';
+                $value['payment_request_button_size'] = 'default';
+                $value['payment_request_button_locations'] = Array('product','cart','checkout');
+            
+                $value['is_short_statement_descriptor_enabled'] = 'no';
+                $value['upe_checkout_experience_enabled'] = 'disabled';
+                $value['upe_checkout_experience_accepted_payments'] = Array();
+ */                        
+                return $value;
+            }
             /**
              * Updates the plugin version in db
              *
@@ -223,8 +296,8 @@ function woocommerce_gateway_m360_payments_init()
                 if (! defined('IFRAME_REQUEST') && (WC_M360_PAYMENTS_VERSION !== get_option('wc_m360_payments_version'))) {
                     do_action('woocommerce_stripe_updated');
 
-                    if (! defined('WC_STRIPE_INSTALLING')) {
-                        define('WC_STRIPE_INSTALLING', true);
+                    if (! defined('WC_M360_PAYMENTS_INSTALLING')) {
+                        define('WC_M360_PAYMENTS_INSTALLING', true);
                     }
 
                     $this->update_plugin_version();
@@ -321,3 +394,29 @@ function woocommerce_gateway_m360_payments_init()
         WC_Stripe::get_instance();
     endif;
 }
+
+function wcstripe_deactivated() {
+	// admin notes are not supported on older versions of WooCommerce.
+	require_once WC_M360_PAYMENTS_PLUGIN_PATH . '/includes/class-wc-stripe-upe-compatibility.php';
+	if ( class_exists( 'WC_Stripe_Inbox_Notes' ) && WC_Stripe_Inbox_Notes::are_inbox_notes_supported() ) {
+		// requirements for the note
+		require_once WC_M360_PAYMENTS_PLUGIN_PATH . '/includes/class-wc-stripe-feature-flags.php';
+		require_once WC_M360_PAYMENTS_PLUGIN_PATH . '/includes/notes/class-wc-stripe-upe-availability-note.php';
+		WC_Stripe_UPE_Availability_Note::possibly_delete_note();
+
+		require_once WC_M360_PAYMENTS_PLUGIN_PATH . '/includes/notes/class-wc-stripe-upe-stripelink-note.php';
+		WC_Stripe_UPE_StripeLink_Note::possibly_delete_note();
+	}
+}
+register_deactivation_hook( __FILE__, 'wcstripe_deactivated' );
+
+
+add_action(
+	'before_woocommerce_init',
+	function() {
+		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
+	}
+);
