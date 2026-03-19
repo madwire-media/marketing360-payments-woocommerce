@@ -106,16 +106,18 @@ class Marketing_360_Payments
         update_option('m360_client_token_expiration', time() + self::TOKEN_EXPIRATION_LENGTH_IN_SECONDS);
     }
 
-     // Gets the full Account Details object.
+    // Gets the full Account Details object.
     public static function get_account_details()
     {
         return json_decode(get_option('woocommerce_stripe_settings')['account_details']);
     }
 
-    // Overwrites the account details object
+    // Overwrites the account details object.
     public static function set_account_details($account_details)
     {
-        update_option('woocommerce_stripe_account_details', json_encode($account_details));
+        $settings = get_option('woocommerce_stripe_settings', []);
+        $settings['account_details'] = json_encode($account_details);
+        update_option('woocommerce_stripe_settings', $settings);
     }
 
     // Get the Marketing 360 Account ID from the full account details object.
@@ -188,9 +190,9 @@ class Marketing_360_Payments
         $account = ($account) ? $account : self::get_account();
 
         return [
-            'Authorization'					=> 'Bearer ' . $token,
-            'Marketing360-Account'			=> $account,
-            'Marketing360-Payments-Source'	=> self::INTEGRATION_ID
+            'Authorization'                 => 'Bearer ' . $token,
+            'Marketing360-Account'          => $account,
+            'Marketing360-Payments-Source'  => self::INTEGRATION_ID
         ];
     }
 
@@ -206,10 +208,10 @@ class Marketing_360_Payments
                     'Content-Type' => 'application/x-www-form-urlencoded'
                 ],
                 'body'        => [
-                    'username' => $username,
-                    'password' => $password,
+                    'username'   => $username,
+                    'password'   => $password,
                     'grant_type' => 'password',
-                    'client_id' => 'woocommerce_payments'
+                    'client_id'  => 'woocommerce_payments'
                 ],
             ]
         );
@@ -260,11 +262,11 @@ class Marketing_360_Payments
         $response = wp_remote_post(
             self::$accounts_url,
             [
-                'method'	=> 'GET',
-                'headers'	=> [
+                'method'  => 'GET',
+                'headers' => [
                     'Authorization' => "Bearer {$token}"
                 ],
-                'body'		=> [
+                'body'    => [
                     'limit' => 999
                 ]
             ]
@@ -291,22 +293,22 @@ class Marketing_360_Payments
         $response = wp_remote_post(
             self::get_payments_url(). '/' . self::VER . '/api/integrations/' . self::INTEGRATION_ID,
             [
-                'method'	=> 'PUT',
-                'headers'	=> [
-                    'Authorization'					=> 'Bearer ' . $token,
-                    'Content-Length' 				=> 0,
-                    'marketing360-account'			=> $account,
+                'method'  => 'PUT',
+                'headers' => [
+                    'Authorization'        => 'Bearer ' . $token,
+                    'Content-Length'       => 0,
+                    'marketing360-account' => $account,
                 ]
             ]
         );
 
         if (is_wp_error($response)) {
-            return $response->get_error_message();
+            return new WP_Error(500, $response->get_error_message());
         }
 
         $response_code = $response['response']['code'];
 
-        if ($response_code !== 201) {
+        if ($response_code !== 201 && $response_code !== 200) {
             $error_message = $response['response']['message'];
             return new WP_Error($response_code, $error_message);
         } else {
@@ -345,21 +347,22 @@ class Marketing_360_Payments
 
                     $account->client_id = $details->clientId;
                     $account->client_secret = $details->secret;
+                    $account->externalAccountNumber_stored = $account->externalAccountNumber;
                     $account->payload = json_encode($account);
 
                     ob_start(); ?>
-						<div class="m360-account">
-							<?php if ($account->accountIcon): ?>
-								<div class="m360-account-icon">
-									<img src="<?php echo $account->accountIcon; ?>">
-								</div>
-							<?php endif; ?>
-							<div class="m360-account-info">
-								<h2 class="display-name"><?php echo $account->displayName; ?></h2>
-								<h3 class="account-number"><?php echo $account->externalAccountNumber; ?></h3>
-							</div>
-						</div>
-					<?php $account->html = ob_get_clean();
+                    <div class="m360-account">
+                        <?php if ($account->accountIcon): ?>
+                            <div class="m360-account-icon">
+                                <img src="<?php echo $account->accountIcon; ?>">
+                            </div>
+                        <?php endif; ?>
+                        <div class="m360-account-info">
+                            <h2 class="display-name"><?php echo $account->displayName; ?></h2>
+                            <h3 class="account-number"><?php echo $account->externalAccountNumber; ?></h3>
+                        </div>
+                    </div>
+                    <?php $account->html = ob_get_clean();
                 }
             }
 
@@ -367,53 +370,47 @@ class Marketing_360_Payments
         }
     }
 
-    // Get the Stripe details for the M360 Account using Account Number, ID, and Secret
-    public static function get_stripe_details($client_id, $client_secret, $account)
+    // Get the Stripe details for the M360 Account using the account number.
+    public static function get_stripe_details($account)
     {
-        $token = self::id_secret_get_access_token($client_id, $client_secret);
+        $token = self::get_client_token();
 
-        if (is_wp_error($token)) {
-            http_response_code($token->get_error_code());
-            die($token->get_error_message());
-        } else {
-            $response = wp_remote_post(
-                self::get_payments_url(). '/' . self::VER . '/api/account',
-                [
-                    'method'      => 'GET',
-                    'timeout'     => 45,
-                    'headers'     => self::get_m360_payments_request_headers($token, $account),
-                ]
-            );
-
-            $response_code = $response['response']['code'];
-
-            if ($response_code !== 200) {
-                return new WP_Error($response_code, $response['response']['message']);
-            } else {
-                $result = json_decode($response['body']);
-                return $result;
-            }
+        if (!$token) {
+            return new WP_Error(401, 'Failed to get client token');
         }
+
+        $response = wp_remote_post(
+            self::get_payments_url(). '/' . self::VER . '/api/account',
+            [
+                'method'  => 'GET',
+                'timeout' => 45,
+                'headers' => self::get_m360_payments_request_headers($token, $account),
+            ]
+        );
+
+        $response_code = $response['response']['code'];
+
+        if ($response_code !== 200) {
+            return new WP_Error($response_code, $response['response']['message']);
+        }
+
+        return json_decode($response['body']);
     }
 
-    // Callback to add the Stripe details to the M360 Account details after clicking "Save Changes" in the Payment Gateway Settings Screen
+    // Callback to add the Stripe details to the M360 Account details after clicking "Save Changes" in the Payment Gateway Settings Screen.
     public static function add_stripe_details_callback($settings)
     {
         if (array_key_exists('account_details', $settings)) {
-            $str = substr($settings['account_details'], 1, -1);
             $u_settings = json_decode($settings['account_details']);
 
             if (!is_null($u_settings)) {
-                $stripe_details = self::get_stripe_details(
-                    $u_settings->client_id,
-                    $u_settings->client_secret,
-                    $u_settings->accountNumber
-                );
+                $stripe_details = self::get_stripe_details($u_settings->accountNumber);
 
-                $u_settings->stripeAccountId = $stripe_details->stripeAccountId;
-                $u_settings->stripeKey = $stripe_details->stripeKey;
-
-                $settings['account_details'] = json_encode($u_settings);
+                if (!is_wp_error($stripe_details)) {
+                    $u_settings->stripeAccountId = $stripe_details->stripeAccountId;
+                    $u_settings->stripeKey = $stripe_details->stripeKey;
+                    $settings['account_details'] = json_encode($u_settings);
+                }
             }
         }
 

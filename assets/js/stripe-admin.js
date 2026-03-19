@@ -167,11 +167,14 @@ jQuery( function( $ ) {
             }
         })
         .error(function(response) {
-            $('#alert-error').text(response.responseText);
+    var message = response.responseText 
+        ? response.responseText 
+        : 'Connection failed (status ' + response.status + '). Please check your credentials and try again.';
 
-            $('#wc-m360-signin-popup-login').val("Connect");
-            console.error(response);
-        })
+    $('#wc-m360-signin-popup-alert-error').text(message).show();
+    $('#wc-m360-signin-popup-login').val('Connect');
+    console.error(response);
+})
     }
 
 

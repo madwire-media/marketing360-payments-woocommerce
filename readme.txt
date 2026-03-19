@@ -2,9 +2,9 @@
 Contributors: marketing360payments
 Tags: ecommerce, woocommerce, payment, payment gateway
 Requires at least: 6.0
-Tested up to: 6.2.2
-Requires PHP: 7.0
-Stable tag: 1.0.4
+Tested up to: 6.9.4
+Requires PHP: 8.0
+Stable tag: 2.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,3 +48,23 @@ If you ever run into issues or you have questions, let us know!
 1. Connecting your website to your Marketing 360® account takes just seconds.
 2. Your customers get a sleek, simple way to enter their card details during checkout.
 3. Each customer that submits a payment will display in the Marketing 360® Payments app.
+
+== Changelog ==
+
+= 1.0.5 =
+* Fixed account connection flow to correctly store Stripe credentials after linking a Marketing 360 account
+* Fixed payment gateway not appearing on checkout after account is connected
+* Fixed process_admin_options not firing to persist stripeKey and stripeAccountId after Save Changes
+* Fixed get_stripe_details, set_account_details, and add_stripe_details_callback to correctly read and write account details
+* Fixed webhook signature validation — conditional was inverted, allowing forged requests and rejecting legitimate ones; switched to hash_equals() to prevent timing attacks
+* Fixed timestamp validation in webhook handler returning bare return instead of return false
+* Fixed testmode property hardcoded to false instead of reading from plugin settings, which caused live charges to always be processed regardless of Test Mode setting
+* Fixed debug query parameters (?showdetails, ?registerdomain, ?getresults) removed from gateway constructor — ?getresults exposed customer payment token records to unauthenticated requests
+* Fixed level 3 data overwrite in request_with_level3_data() — $level3_data was immediately reset to an empty array, causing level 3 data to always be skipped
+* Fixed Apple Pay domain registration — debug echo/print_r/die() block was preventing the function from ever completing and exposing authorization tokens
+* Restored idempotency key logic in registerApplePaySubdomain()
+* Restored seven settings validation methods that were commented out (M360 account, client ID, client secret, live publishable key, live secret key, test publishable key, test secret key)
+* Removed hardcoded live credentials that were present in commented-out code
+
+= 1.0.4 =
+* Initial public release
