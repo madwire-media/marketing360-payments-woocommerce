@@ -4,7 +4,7 @@ Tags: ecommerce, woocommerce, payment, payment gateway
 Requires at least: 6.0
 Tested up to: 6.9.4
 Requires PHP: 8.0
-Stable tag: 2.0
+Stable tag: 1.0.9
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,7 +51,7 @@ If you ever run into issues or you have questions, let us know!
 
 == Changelog ==
 
-= 1.0.5 =
+= 1.0.9 =
 * Fixed account connection flow to correctly store Stripe credentials after linking a Marketing 360 account
 * Fixed payment gateway not appearing on checkout after account is connected
 * Fixed process_admin_options not firing to persist stripeKey and stripeAccountId after Save Changes
