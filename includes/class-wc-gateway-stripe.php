@@ -285,33 +285,37 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         $data = wp_parse_args($data, $defaults);
 
         ob_start(); ?>
-			<tr valign="top">
-				<th scope="row" class="titledesc">
-					<label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.?></label>
-				</th>
-				<td class="forminp">
-					<?php
+<tr valign="top">
+  <th scope="row" class="titledesc">
+    <label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?>
+      <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.?></label>
+  </th>
+  <td class="forminp">
+    <?php
                         $details = json_decode($this->get_option($key));
         $button_text = ($details) ? 'Connect to a different Marketing 360® account' : 'Connect to your Marketing 360® account';
         ?>
-		            <div id="wc-m360-notice-box">
-		                <?php if ($details): ?>
-		                    <p><?php echo __("Currently connected to Marketing 360® account: {$details->externalAccountNumber} {$details->displayName}. <a href=\"#\" onclick=\"m360SignOut()\">Disconnect Account</a>", 'marketing-360-payments-for-woocommerce'); ?></p>
-		                <?php endif; ?>
-		            </div>
-		            <button id="wc-m360-api-auth" class="button-secondary">
-		                <?php echo esc_html(__($button_text, 'marketing-360-payments-for-woocommerce')); ?>
-		            </button>
-		            <style>
-		                #wc-m360-notice-box p {
-		                    margin-bottom: 10px;
-		                    margin-top: 0px;
-		                }
-		            </style>
-					<input type="hidden" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>" value="<?php echo esc_attr($this->get_option($key)); ?>"/>
-				</td>
-			</tr>
-		<?php return ob_get_clean();
+    <div id="wc-m360-notice-box">
+      <?php if ($details): ?>
+      <p>
+        <?php echo __("Currently connected to Marketing 360® account: {$details->externalAccountNumber} {$details->displayName}. <a href=\"#\" onclick=\"m360SignOut()\">Disconnect Account</a>", 'marketing-360-payments-for-woocommerce'); ?>
+      </p>
+      <?php endif; ?>
+    </div>
+    <button id="wc-m360-api-auth" class="button-secondary">
+      <?php echo esc_html(__($button_text, 'marketing-360-payments-for-woocommerce')); ?>
+    </button>
+    <style>
+    #wc-m360-notice-box p {
+      margin-bottom: 10px;
+      margin-top: 0px;
+    }
+    </style>
+    <input type="hidden" name="<?php echo esc_attr($field_key); ?>" id="<?php echo esc_attr($field_key); ?>"
+      value="<?php echo esc_attr($this->get_option($key)); ?>" />
+  </td>
+</tr>
+<?php return ob_get_clean();
     }
 
     /**
@@ -386,53 +390,57 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     public function elements_form()
     {
         ?>
-		<fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class="wc-credit-card-form wc-payment-form" style="background:transparent;">
-			<?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
+<fieldset id="wc-<?php echo esc_attr($this->id); ?>-cc-form" class="wc-credit-card-form wc-payment-form"
+  style="background:transparent;">
+  <?php do_action('woocommerce_credit_card_form_start', $this->id); ?>
 
-			<?php if ($this->inline_cc_form) { ?>
-				<label for="card-element">
-					<?php esc_html_e('Credit or debit card', 'marketing-360-payments-for-woocommerce'); ?>
-				</label>
+  <?php if ($this->inline_cc_form) { ?>
+  <label for="card-element">
+    <?php esc_html_e('Credit or debit card', 'marketing-360-payments-for-woocommerce'); ?>
+  </label>
 
-				<div id="stripe-card-element" class="wc-stripe-elements-field">
-				<!-- a Stripe Element will be inserted here. -->
-				</div>
-			<?php } else { ?>
-				<div class="form-row form-row-wide">
-					<label for="stripe-card-element"><?php esc_html_e('Card Number', 'marketing-360-payments-for-woocommerce'); ?> <span class="required">*</span></label>
-					<div class="stripe-card-group">
-						<div id="stripe-card-element" class="wc-stripe-elements-field">
-						<!-- a Stripe Element will be inserted here. -->
-						</div>
+  <div id="stripe-card-element" class="wc-stripe-elements-field">
+    <!-- a Stripe Element will be inserted here. -->
+  </div>
+  <?php } else { ?>
+  <div class="form-row form-row-wide">
+    <label for="stripe-card-element"><?php esc_html_e('Card Number', 'marketing-360-payments-for-woocommerce'); ?> <span
+        class="required">*</span></label>
+    <div class="stripe-card-group">
+      <div id="stripe-card-element" class="wc-stripe-elements-field">
+        <!-- a Stripe Element will be inserted here. -->
+      </div>
 
-						<i class="stripe-credit-card-brand stripe-card-brand" alt="Credit Card"></i>
-					</div>
-				</div>
+      <i class="stripe-credit-card-brand stripe-card-brand" alt="Credit Card"></i>
+    </div>
+  </div>
 
-				<div class="form-row form-row-first">
-					<label for="stripe-exp-element"><?php esc_html_e('Expiry Date', 'marketing-360-payments-for-woocommerce'); ?> <span class="required">*</span></label>
+  <div class="form-row form-row-first">
+    <label for="stripe-exp-element"><?php esc_html_e('Expiry Date', 'marketing-360-payments-for-woocommerce'); ?> <span
+        class="required">*</span></label>
 
-					<div id="stripe-exp-element" class="wc-stripe-elements-field">
-					<!-- a Stripe Element will be inserted here. -->
-					</div>
-				</div>
+    <div id="stripe-exp-element" class="wc-stripe-elements-field">
+      <!-- a Stripe Element will be inserted here. -->
+    </div>
+  </div>
 
-				<div class="form-row form-row-last">
-					<label for="stripe-cvc-element"><?php esc_html_e('Card Code (CVC)', 'marketing-360-payments-for-woocommerce'); ?> <span class="required">*</span></label>
-				<div id="stripe-cvc-element" class="wc-stripe-elements-field">
-				<!-- a Stripe Element will be inserted here. -->
-				</div>
-				</div>
-				<div class="clear"></div>
-			<?php } ?>
+  <div class="form-row form-row-last">
+    <label for="stripe-cvc-element"><?php esc_html_e('Card Code (CVC)', 'marketing-360-payments-for-woocommerce'); ?>
+      <span class="required">*</span></label>
+    <div id="stripe-cvc-element" class="wc-stripe-elements-field">
+      <!-- a Stripe Element will be inserted here. -->
+    </div>
+  </div>
+  <div class="clear"></div>
+  <?php } ?>
 
-			<!-- Used to display form errors -->
-			<div class="stripe-source-errors" role="alert"></div>
-			<br />
-			<?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
-			<div class="clear"></div>
-		</fieldset>
-		<?php
+  <!-- Used to display form errors -->
+  <div class="stripe-source-errors" role="alert"></div>
+  <br />
+  <?php do_action('woocommerce_credit_card_form_end', $this->id); ?>
+  <div class="clear"></div>
+</fieldset>
+<?php
     }
 
     /**
@@ -452,10 +460,11 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         wp_enqueue_script('woocommerce_stripe_admin', plugins_url('assets/js/stripe-admin' . $suffix . '.js', WC_M360_PAYMENTS_MAIN_FILE), array(), WC_M360_PAYMENTS_VERSION, true);
 
         ob_start(); ?>
-			connectUrl 		= "<?php echo get_rest_url(null, 'wc_marketing_360_payments/' . Marketing_360_Payments::VER . '/sign_in'); ?>";
-            nonce 			= "<?php echo wp_create_nonce('wp_rest'); ?>";
-        	stripeKey 		= "<?php echo $this->publishable_key; ?>";
-		<?php wp_add_inline_script('woocommerce_stripe_admin', ob_get_clean(), 'before');
+connectUrl =
+"<?php echo get_rest_url(null, 'wc_marketing_360_payments/' . Marketing_360_Payments::VER . '/sign_in'); ?>";
+nonce = "<?php echo wp_create_nonce('wp_rest'); ?>";
+stripeKey = "<?php echo $this->publishable_key; ?>";
+<?php wp_add_inline_script('woocommerce_stripe_admin', ob_get_clean(), 'before');
 
         wp_enqueue_style('woocommerce_stripe_admin', plugins_url('assets/css/admin' . $suffix . '.css', WC_M360_PAYMENTS_MAIN_FILE), array(), WC_M360_PAYMENTS_VERSION);
     }
@@ -754,7 +763,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
                 $this->maybe_remove_non_existent_customer($intent->error, $order);
 
                 // We want to retry.
-                if ($this->is_retryable_error($intent->error)) {
+                if ($this->is_retryable_error(error: $intent->error)) {
                     return $this->retry_after_error($intent, $order, $retry, $force_save_source, $previous_error, $use_order_source);
                 }
 
@@ -849,18 +858,18 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
         ?>
 
-		<tr>
-			<td class="label stripe-fee">
-				<?php echo wc_help_tip(__('This represents the fee Marketing 360® Payments collects for the transaction.', 'marketing-360-payments-for-woocommerce')); // wpcs: xss ok.?>
-				<?php esc_html_e('Marketing 360® Payments Fee:', 'marketing-360-payments-for-woocommerce'); ?>
-			</td>
-			<td width="1%"></td>
-			<td class="total">
-				-&nbsp;<?php echo wc_price($fee, array( 'currency' => $currency )); // wpcs: xss ok.?>
-			</td>
-		</tr>
+<tr>
+  <td class="label stripe-fee">
+    <?php echo wc_help_tip(__('This represents the fee Marketing 360® Payments collects for the transaction.', 'marketing-360-payments-for-woocommerce')); // wpcs: xss ok.?>
+    <?php esc_html_e('Marketing 360® Payments Fee:', 'marketing-360-payments-for-woocommerce'); ?>
+  </td>
+  <td width="1%"></td>
+  <td class="total">
+    -&nbsp;<?php echo wc_price($fee, array( 'currency' => $currency )); // wpcs: xss ok.?>
+  </td>
+</tr>
 
-		<?php
+<?php
     }
 
     /**
@@ -887,18 +896,18 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
         ?>
 
-		<tr>
-			<td class="label stripe-payout">
-				<?php echo wc_help_tip(__('This represents the net total that will be credited to your bank account. This may be in the currency that is set in your Marketing 360® Payments account.', 'marketing-360-payments-for-woocommerce')); // wpcs: xss ok.?>
-				<?php esc_html_e('Marketing 360® Payments Payout:', 'marketing-360-payments-for-woocommerce'); ?>
-			</td>
-			<td width="1%"></td>
-			<td class="total">
-				<?php echo wc_price($net, array( 'currency' => $currency )); // wpcs: xss ok.?>
-			</td>
-		</tr>
+<tr>
+  <td class="label stripe-payout">
+    <?php echo wc_help_tip(__('This represents the net total that will be credited to your bank account. This may be in the currency that is set in your Marketing 360® Payments account.', 'marketing-360-payments-for-woocommerce')); // wpcs: xss ok.?>
+    <?php esc_html_e('Marketing 360® Payments Payout:', 'marketing-360-payments-for-woocommerce'); ?>
+  </td>
+  <td width="1%"></td>
+  <td class="total">
+    <?php echo wc_price($net, array( 'currency' => $currency )); // wpcs: xss ok.?>
+  </td>
+</tr>
 
-		<?php
+<?php
     }
 
     /**
