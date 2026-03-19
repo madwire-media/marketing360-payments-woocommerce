@@ -5,10 +5,10 @@
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
- * Version: 1.0.6
+ * Version: 1.0.7
  * Requires at least: 6.4
  * Tested up to: 6.6.2
- * Stable tag: 1.0.6
+ * Stable tag: 1.0.7
  * WC requires at least: 8.9
  * WC tested up to: 9.3
  * Text Domain: marketing-360-payments-for-woocommerce
@@ -23,7 +23,7 @@ if (! defined('ABSPATH')) {
 /**
  * Required minimums and constants
  */
-define('WC_M360_PAYMENTS_VERSION', '8.7.0');
+define('WC_M360_PAYMENTS_VERSION', '1.0.7');
 define('WC_M360_PAYMENTS_MIN_PHP_VER', '7.3.0');
 define('WC_M360_PAYMENTS_MIN_WC_VER', '7.4');
 define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '7.5');
