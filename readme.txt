@@ -51,7 +51,7 @@ If you ever run into issues or you have questions, let us know!
 
 == Changelog ==
 
-= 1.0.5 =
+= 2.0 =
 * Fixed account connection flow to correctly store Stripe credentials after linking a Marketing 360 account
 * Fixed payment gateway not appearing on checkout after account is connected
 * Fixed process_admin_options not firing to persist stripeKey and stripeAccountId after Save Changes
