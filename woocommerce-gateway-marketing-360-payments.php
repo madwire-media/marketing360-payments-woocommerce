@@ -5,7 +5,7 @@
  * Description: Accept all major debit and credit cards securely on your site.
  * Author: Marketing 360®
  * Author URI: https://marketing360.com
- * Version: 2.0
+ * Version: 2.0.1
  * Requires at least: 6.0
  * Tested up to: 6.9.4
  * Stable tag: 2.0
@@ -23,7 +23,7 @@ if (! defined('ABSPATH')) {
 /**
  * Required minimums and constants
  */
-define('WC_M360_PAYMENTS_VERSION', '2.0');
+define('WC_M360_PAYMENTS_VERSION', '2.0.1');
 define('WC_M360_PAYMENTS_MIN_PHP_VER', '5.6.0');
 define('WC_M360_PAYMENTS_MIN_WC_VER', '3.0');
 define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '3.0');
