@@ -30,6 +30,7 @@ define('WC_M360_PAYMENTS_FUTURE_MIN_WC_VER', '3.0');
 define('WC_M360_PAYMENTS_MAIN_FILE', __FILE__);
 define('WC_M360_PAYMENTS_PLUGIN_URL', untrailingslashit(plugin_dir_url(__FILE__)));
 define('WC_M360_PAYMENTS_PLUGIN_PATH', untrailingslashit(plugin_dir_path(__FILE__)));
+define('WC_STRIPE_PLUGIN_PATH', untrailingslashit(plugin_dir_path(__FILE__)));
 
 // phpcs:disable WordPress.Files.FileName
 
