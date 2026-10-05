@@ -52,6 +52,7 @@ If you ever run into issues or you have questions, let us know!
 == Changelog ==
 
 = 2.0.2 =
+* Fix: prevent a fatal error during Apple Pay domain verification when the WooCommerce Stripe plugin isn't installed
 * Security: payment intent verification now requires the order key and, for orders placed by a registered customer, that the customer is logged in. Previously an order ID alone could be used to select another customer's order.
 * Tested with WordPress 7.0
 
