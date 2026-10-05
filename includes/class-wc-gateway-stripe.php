@@ -1052,6 +1052,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         $verification_url = add_query_arg(
             array(
                 'order'            => $order->get_id(),
+                'order_key'        => $order->get_order_key(),
                 'nonce'            => wp_create_nonce('wc_stripe_confirm_pi'),
                 'redirect_to'      => rawurlencode($this->get_return_url($order)),
                 'is_pay_for_order' => true,
@@ -1119,9 +1120,11 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         }
 
         // Put the final thank you page redirect into the verification URL.
+        $order            = wc_get_order($order_id);
         $verification_url = add_query_arg(
             array(
                 'order'       => $order_id,
+                'order_key'   => $order ? $order->get_order_key() : '',
                 'nonce'       => wp_create_nonce('wc_stripe_confirm_pi'),
                 'redirect_to' => rawurlencode($result['redirect']),
             ),

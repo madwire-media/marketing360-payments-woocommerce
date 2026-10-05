@@ -2,9 +2,9 @@
 Contributors: marketing360payments
 Tags: ecommerce, woocommerce, payment, payment gateway
 Requires at least: 6.0
-Tested up to: 6.9.4
+Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,10 @@ If you ever run into issues or you have questions, let us know!
 3. Each customer that submits a payment will display in the Marketing 360® Payments app.
 
 == Changelog ==
+
+= 2.0.2 =
+* Security: payment intent verification now requires the order key and, for orders placed by a registered customer, that the customer is logged in. Previously an order ID alone could be used to select another customer's order.
+* Tested with WordPress 7.0
 
 = 2.0 =
 * Fixed account connection flow to correctly store Stripe credentials after linking a Marketing 360 account
