@@ -240,6 +240,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 					$verification_url = add_query_arg(
 						array(
 							'order'         => $order_id,
+							'order_key'     => $renewal_order->get_order_key(),
 							'nonce'         => wp_create_nonce( 'wc_stripe_confirm_pi' ),
 							'redirect_to'   => remove_query_arg( array( 'process_early_renewal', 'subscription_id', 'wcs_nonce' ) ),
 							'early_renewal' => true,
