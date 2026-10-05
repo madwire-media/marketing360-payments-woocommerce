@@ -57,7 +57,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 		// We will need to confirm webhooks with Marketing 360 Payments here to get them registered
 		if ( isset($_GET['confirm'] ) ) {
 			header('Content-Type: text/plain');
-			echo $_GET['confirm'];
+			echo esc_html( sanitize_text_field( wp_unslash( $_GET['confirm'] ) ) );
 			exit();
 		}
 
@@ -77,7 +77,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 			status_header( 200 );
 			exit;
 		} else {
-			WC_Stripe_Logger::log( 'Incoming webhook failed validation: ' . print_r( $request_body, true ) );
+			WC_Stripe_Logger::log( 'Incoming webhook failed validation: ' . wc_print_r( $request_body, true ) );
 			status_header( 400 );
 			exit;
 		}
@@ -218,9 +218,9 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 					// Source param wrong? The CARD may have been deleted on stripe's end. Remove token and show message.
 					$wc_token = WC_Payment_Tokens::get( $prepared_source->token_id );
 					$wc_token->delete();
-					$localized_message = __( 'This card is no longer available and has been removed.', 'woocommerce-gateway-stripe' );
+					$localized_message = __( 'This card is no longer available and has been removed.', 'marketing-360-payments-for-woocommerce' );
 					$order->add_order_note( $localized_message );
-					throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+					throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 				}
 
 				// We want to retry.
@@ -237,9 +237,9 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 						$this->retry_interval++;
 						return $this->process_webhook_payment( $notification, true );
 					} else {
-						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'woocommerce-gateway-stripe' );
+						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'marketing-360-payments-for-woocommerce' );
 						$order->add_order_note( $localized_message );
-						throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+						throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 					}
 				}
 
@@ -253,7 +253,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 
 				$order->add_order_note( $localized_message );
 
-				throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+				throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 			}
 
 			// To prevent double processing the order on WC side.
@@ -295,7 +295,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 		}
 
 		/* translators: 1) The URL to the order. */
-		$order->update_status( 'on-hold', sprintf( __( 'A dispute was created for this order. Response is needed. Please go to your <a href="%s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review this dispute.', 'woocommerce-gateway-stripe' ), $this->get_transaction_url( $order ) ) );
+		$order->update_status( 'on-hold', sprintf( __( 'A dispute was created for this order. Response is needed. Please go to your <a href="%s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review this dispute.', 'marketing-360-payments-for-woocommerce' ), $this->get_transaction_url( $order ) ) );
 
 		do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
 
@@ -339,12 +339,12 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 					$order->set_total( $partial_amount );
 					$this->update_fees( $order, $notification->data->object->refunds->data[0]->balance_transaction );
 					/* translators: partial captured amount */
-					$order->add_order_note( sprintf( __( 'This charge was partially captured via Stripe Dashboard in the amount of: %s', 'woocommerce-gateway-stripe' ), $partial_amount ) );
+					$order->add_order_note( sprintf( __( 'This charge was partially captured via Stripe Dashboard in the amount of: %s', 'marketing-360-payments-for-woocommerce' ), $partial_amount ) );
 				} else {
 					$order->payment_complete( $notification->data->object->id );
 
 					/* translators: transaction id */
-					$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'woocommerce-gateway-stripe' ), $notification->data->object->id ) );
+					$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'marketing-360-payments-for-woocommerce' ), $notification->data->object->id ) );
 				}
 
 				if ( is_callable( array( $order, 'save' ) ) ) {
@@ -394,7 +394,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 		$order->payment_complete( $notification->data->object->id );
 
 		/* translators: transaction id */
-		$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'woocommerce-gateway-stripe' ), $notification->data->object->id ) );
+		$order->add_order_note( sprintf( __( 'Stripe charge complete (Charge ID: %s)', 'marketing-360-payments-for-woocommerce' ), $notification->data->object->id ) );
 
 		if ( is_callable( array( $order, 'save' ) ) ) {
 			$order->save();
@@ -421,7 +421,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 			return;
 		}
 
-		$order->update_status( 'failed', __( 'This payment failed to clear.', 'woocommerce-gateway-stripe' ) );
+		$order->update_status( 'failed', __( 'This payment failed to clear.', 'marketing-360-payments-for-woocommerce' ) );
 
 		do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
 	}
@@ -454,7 +454,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 		}
 
 		if ( ! $order->has_status( 'cancelled' ) ) {
-			$order->update_status( 'cancelled', __( 'This payment has cancelled.', 'woocommerce-gateway-stripe' ) );
+			$order->update_status( 'cancelled', __( 'This payment has cancelled.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
@@ -489,7 +489,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 
 			// Only refund captured charge.
 			if ( $charge ) {
-				$reason = ( isset( $captured ) && 'yes' === $captured ) ? __( 'Refunded via Stripe Dashboard', 'woocommerce-gateway-stripe' ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'woocommerce-gateway-stripe' );
+				$reason = ( isset( $captured ) && 'yes' === $captured ) ? __( 'Refunded via Stripe Dashboard', 'marketing-360-payments-for-woocommerce' ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'marketing-360-payments-for-woocommerce' );
 
 				// Create the refund.
 				$refund = wc_create_refund(
@@ -517,7 +517,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 				}
 
 				/* translators: 1) dollar amount 2) transaction id 3) refund message */
-				$refund_message = ( isset( $captured ) && 'yes' === $captured ) ? sprintf( __( 'Refunded %1$s - Refund ID: %2$s - %3$s', 'woocommerce-gateway-stripe' ), $amount, $notification->data->object->refunds->data[0]->id, $reason ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'woocommerce-gateway-stripe' );
+				$refund_message = ( isset( $captured ) && 'yes' === $captured ) ? sprintf( __( 'Refunded %1$s - Refund ID: %2$s - %3$s', 'marketing-360-payments-for-woocommerce' ), $amount, $notification->data->object->refunds->data[0]->id, $reason ) : __( 'Pre-Authorization Released via Stripe Dashboard', 'marketing-360-payments-for-woocommerce' );
 
 				$order->add_order_note( $refund_message );
 			}
@@ -548,7 +548,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 		}
 
 		/* translators: 1) The URL to the order. 2) The reason type. */
-		$message = sprintf( __( 'A review has been opened for this order. Action is needed. Please go to your <a href="%1$s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review the issue. Reason: (%2$s)', 'woocommerce-gateway-stripe' ), $this->get_transaction_url( $order ), $notification->data->object->reason );
+		$message = sprintf( __( 'A review has been opened for this order. Action is needed. Please go to your <a href="%1$s" title="Stripe Dashboard" target="_blank">Stripe Dashboard</a> to review the issue. Reason: (%2$s)', 'marketing-360-payments-for-woocommerce' ), $this->get_transaction_url( $order ), $notification->data->object->reason );
 
 		if ( apply_filters( 'wc_stripe_webhook_review_change_order_status', true, $order, $notification ) ) {
 			$order->update_status( 'on-hold', $message );
@@ -581,7 +581,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 		}
 
 		/* translators: 1) The reason type. */
-		$message = sprintf( __( 'The opened review for this order is now closed. Reason: (%s)', 'woocommerce-gateway-stripe' ), $notification->data->object->reason );
+		$message = sprintf( __( 'The opened review for this order is now closed. Reason: (%s)', 'marketing-360-payments-for-woocommerce' ), $notification->data->object->reason );
 
 		if ( $order->has_status( 'on-hold' ) ) {
 			if ( apply_filters( 'wc_stripe_webhook_review_change_order_status', true, $order, $notification ) ) {
@@ -678,7 +678,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 			$error_message = $intent->last_payment_error ? $intent->last_payment_error->message : "";
 
 			/* translators: 1) The error message that was received from Stripe. */
-			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'woocommerce-gateway-stripe' ), $error_message ) );
+			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'marketing-360-payments-for-woocommerce' ), $error_message ) );
 
 			do_action( 'wc_gateway_stripe_process_webhook_payment_error', $order, $notification );
 
@@ -717,7 +717,7 @@ class WC_Stripe_Webhook_Handler extends WC_Stripe_Payment_Gateway {
 			$error_message = $intent->last_setup_error ? $intent->last_setup_error->message : "";
 
 			/* translators: 1) The error message that was received from Stripe. */
-			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'woocommerce-gateway-stripe' ), $error_message ) );
+			$order->update_status( 'failed', sprintf( __( 'Stripe SCA authentication failed. Reason: %s', 'marketing-360-payments-for-woocommerce' ), $error_message ) );
 
 			$this->send_failed_order_email( $order_id );
 		}

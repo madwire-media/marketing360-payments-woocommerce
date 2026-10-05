@@ -2,6 +2,11 @@
 /**
  * Marketing 360 API connection class
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class Marketing_360_Payments
 {
     /**
@@ -327,13 +332,13 @@ class Marketing_360_Payments
 
         if (is_wp_error($token)) {
             http_response_code($token->get_error_code());
-            die($token->get_error_message());
+            die(esc_html($token->get_error_message()));
         } else {
             $accounts = self::get_m360_accounts($token);
 
             if (is_wp_error($accounts)) {
                 http_response_code($accounts->get_error_code());
-                die($accounts->get_error_message());
+                die(esc_html($accounts->get_error_message()));
             }
 
             if ($accounts) {
@@ -354,12 +359,12 @@ class Marketing_360_Payments
                     <div class="m360-account">
                         <?php if ($account->accountIcon): ?>
                             <div class="m360-account-icon">
-                                <img src="<?php echo $account->accountIcon; ?>">
+                                <img src="<?php echo esc_url($account->accountIcon); ?>">
                             </div>
                         <?php endif; ?>
                         <div class="m360-account-info">
-                            <h2 class="display-name"><?php echo $account->displayName; ?></h2>
-                            <h3 class="account-number"><?php echo $account->externalAccountNumber; ?></h3>
+                            <h2 class="display-name"><?php echo esc_html($account->displayName); ?></h2>
+                            <h3 class="account-number"><?php echo esc_html($account->externalAccountNumber); ?></h3>
                         </div>
                     </div>
                     <?php $account->html = ob_get_clean();

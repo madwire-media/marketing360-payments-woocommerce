@@ -88,11 +88,11 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 			$source_info = WC_Stripe_API::retrieve( 'sources/' . $source );
 
 			if ( ! empty( $source_info->error ) ) {
-				throw new WC_Stripe_Exception( print_r( $source_info, true ), $source_info->error->message );
+				throw new WC_Stripe_Exception( esc_html( wc_print_r( $source_info, true ) ), esc_html( $source_info->error->message ) );
 			}
 
 			if ( 'failed' === $source_info->status || 'canceled' === $source_info->status ) {
-				throw new WC_Stripe_Exception( print_r( $source_info, true ), __( 'Unable to process this payment, please try again or use alternative method.', 'marketing-360-payments-for-woocommerce' ) );
+				throw new WC_Stripe_Exception( esc_html( wc_print_r( $source_info, true ) ), esc_html__( 'Unable to process this payment, please try again or use alternative method.', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			// If already consumed, then ignore request.
@@ -138,7 +138,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 					$wc_token->delete();
 					$localized_message = __( 'This card is no longer available and has been removed.', 'marketing-360-payments-for-woocommerce' );
 					$order->add_order_note( $localized_message );
-					throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+					throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 				}
 
 				// We want to retry.
@@ -156,7 +156,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 					} else {
 						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'marketing-360-payments-for-woocommerce' );
 						$order->add_order_note( $localized_message );
-						throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+						throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 					}
 				}
 
@@ -168,7 +168,7 @@ class WC_Stripe_Order_Handler extends WC_Stripe_Payment_Gateway {
 					$message = isset( $localized_messages[ $response->error->type ] ) ? $localized_messages[ $response->error->type ] : $response->error->message;
 				}
 
-				throw new WC_Stripe_Exception( print_r( $response, true ), $message );
+				throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $message ) );
 			}
 
 			// To prevent double processing the order on WC side.

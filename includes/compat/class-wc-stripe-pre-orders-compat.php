@@ -48,7 +48,7 @@ class WC_Stripe_Pre_Orders_Compat extends WC_Stripe_Payment_Gateway {
 
 			// We need a source on file to continue.
 			if ( empty( $prepared_source->customer ) || empty( $prepared_source->source ) ) {
-				throw new WC_Stripe_Exception( __( 'Unable to store payment details. Please try again.', 'marketing-360-payments-for-woocommerce' ) );
+				throw new WC_Stripe_Exception( esc_html__( 'Unable to store payment details. Please try again.', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			// Setup the response early to allow later modifications.
@@ -102,7 +102,7 @@ class WC_Stripe_Pre_Orders_Compat extends WC_Stripe_Payment_Gateway {
 
 			if ( ! empty( $response->error ) && ! $is_authentication_required ) {
 				if ( ! $retry ) {
-					throw new Exception( $response->error->message );
+					throw new Exception( esc_html( $response->error->message ) );
 				}
 				$this->remove_order_source_before_retry( $order );
 				$this->process_pre_order_release_payment( $order, false );
@@ -111,6 +111,7 @@ class WC_Stripe_Pre_Orders_Compat extends WC_Stripe_Payment_Gateway {
 				$id = $charge->id;
 
 				$order->set_transaction_id( $id );
+				/* translators: %s: Stripe charge ID. */
 				$order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'marketing-360-payments-for-woocommerce' ), $id ) );
 				if ( is_callable( array( $order, 'save' ) ) ) {
 					$order->save();
@@ -120,7 +121,7 @@ class WC_Stripe_Pre_Orders_Compat extends WC_Stripe_Payment_Gateway {
 
 				do_action( 'wc_gateway_stripe_process_payment_authentication_required', $order );
 
-				throw new WC_Stripe_Exception( print_r( $response, true ), $response->error->message );
+				throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $response->error->message ) );
 			} else {
 				// Successful
 				$this->process_response( end( $response->charges->data ), $order );

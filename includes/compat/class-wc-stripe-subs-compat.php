@@ -223,8 +223,8 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 				/* translators: minimum amount */
 				$message = sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'marketing-360-payments-for-woocommerce' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) );
 				throw new WC_Stripe_Exception(
-					'Error while processing renewal order ' . $renewal_order->get_id() . ' : ' . $message,
-					$message
+					esc_html( 'Error while processing renewal order ' . $renewal_order->get_id() . ' : ' . $message ),
+					esc_html( $message )
 				);
 			}
 
@@ -274,8 +274,8 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 
 			if ( ! $prepared_source->customer ) {
 				throw new WC_Stripe_Exception(
-					'Failed to process renewal for order ' . $renewal_order->get_id() . '. Stripe customer id is missing in the order',
-					__( 'Customer not found', 'marketing-360-payments-for-woocommerce' )
+					esc_html( 'Failed to process renewal for order ' . $renewal_order->get_id() . '. Stripe customer id is missing in the order' ),
+					esc_html__( 'Customer not found', 'marketing-360-payments-for-woocommerce' )
 				);
 			}
 
@@ -317,7 +317,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 					} else {
 						$localized_message = __( 'Sorry, we are unable to process your payment at this time. Please retry later.', 'marketing-360-payments-for-woocommerce' );
 						$renewal_order->add_order_note( $localized_message );
-						throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+						throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 					}
 				}
 
@@ -331,7 +331,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 
 				$renewal_order->add_order_note( $localized_message );
 
-				throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+				throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 			}
 
 			// Either the charge was successfully captured, or it requires further authentication.
@@ -347,6 +347,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 				$order_id = $renewal_order->get_id();
 
 				$renewal_order->set_transaction_id( $id );
+				/* translators: %s: Stripe charge ID. */
 				$renewal_order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'marketing-360-payments-for-woocommerce' ), $id ) );
 				if ( is_callable( array( $renewal_order, 'save' ) ) ) {
 					$renewal_order->save();
@@ -493,10 +494,10 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 
 				// Allow empty stripe customer id during subscription renewal. It will be added when processing payment if required.
 				if ( ! isset( $_POST['wc_order_action'] ) || 'wcs_process_renewal' !== $_POST['wc_order_action'] ) {
-					throw new Exception( __( 'A "Stripe Customer ID" value is required.', 'marketing-360-payments-for-woocommerce' ) );
+					throw new Exception( esc_html__( 'A "Stripe Customer ID" value is required.', 'marketing-360-payments-for-woocommerce' ) );
 				}
 			} elseif ( 0 !== strpos( $payment_meta['post_meta']['_stripe_customer_id']['value'], 'cus_' ) ) {
-				throw new Exception( __( 'Invalid customer ID. A valid "Stripe Customer ID" must begin with "cus_".', 'marketing-360-payments-for-woocommerce' ) );
+				throw new Exception( esc_html__( 'Invalid customer ID. A valid "Stripe Customer ID" must begin with "cus_".', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			if (
@@ -505,7 +506,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 				&& ( ! empty( $payment_meta['post_meta']['_stripe_source_id']['value'] )
 				&& 0 !== strpos( $payment_meta['post_meta']['_stripe_source_id']['value'], 'src_' ) ) ) {
 
-				throw new Exception( __( 'Invalid source ID. A valid source "Stripe Source ID" must begin with "src_" or "card_".', 'marketing-360-payments-for-woocommerce' ) );
+				throw new Exception( esc_html__( 'Invalid source ID. A valid source "Stripe Source ID" must begin with "src_" or "card_".', 'marketing-360-payments-for-woocommerce' ) );
 			}
 		}
 	}
@@ -650,6 +651,7 @@ class WC_Stripe_Subs_Compat extends WC_Gateway_Stripe {
 		// Fail the payment attempt (order would be currently pending because of retry rules).
 		$charge    = end( $existing_intent->charges->data );
 		$charge_id = $charge->id;
+		/* translators: %s: Stripe charge ID. */
 		$renewal_order->update_status( 'failed', sprintf( __( 'Stripe charge awaiting authentication by user: %s.', 'marketing-360-payments-for-woocommerce' ), $charge_id ) );
 
 		return true;

@@ -7,12 +7,13 @@
  * Author URI: https://marketing360.com
  * Version: 2.0.2
  * Requires at least: 6.0
- * Tested up to: 7.0
+ * Tested up to: 7.1
  * Stable tag: 2.0.2
  * WC requires at least: 7.5
  * WC tested up to: 9.4
  * Text Domain: marketing-360-payments-for-woocommerce
- * Domain Path: /languages
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  */
 
@@ -55,16 +56,16 @@ function woocommerce_m360_payments_missing_wc_notice()
 function woocommerce_m360_payments_wc_not_supported()
 {
     /* translators: $1. Minimum WooCommerce version. $2. Current WooCommerce version. */
-    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Marketing 360® Payments requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'marketing-360-payments-for-woocommerce'), WC_M360_PAYMENTS_MIN_WC_VER, WC_VERSION) . '</strong></p></div>';
+    echo '<div class="error"><p><strong>' . sprintf(esc_html__('Marketing 360® Payments requires WooCommerce %1$s or greater to be installed and active. WooCommerce %2$s is no longer supported.', 'marketing-360-payments-for-woocommerce'), esc_html(WC_M360_PAYMENTS_MIN_WC_VER), esc_html(WC_VERSION)) . '</strong></p></div>';
 }
 
 function woocommerce_gateway_m360_payments_stripe_installed_notice()
 {
     ob_start(); ?>
 		<div class="notice notice-error">
-			<p><?php echo __('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.'); ?></p>
+			<p><?php esc_html_e('Head’s up! You need to deactivate the Stripe plugin to take advantage of Marketing 360 Payments. Leaving both plugins active will cause issues processing transactions in your store, and no one wants that.', 'marketing-360-payments-for-woocommerce'); ?></p>
 		</div>
-	<?php echo ob_get_clean();
+	<?php echo wp_kses_post(ob_get_clean());
 }
 
 add_action('plugins_loaded', 'woocommerce_gateway_m360_payments_init', 9999);

@@ -147,6 +147,7 @@ class WC_Stripe_Admin_Notices {
 			}
 
 			if ( empty( $show_sca_notice ) ) {
+				/* translators: %1$s: URL to an article about SCA. */
 				$this->add_admin_notice( 'sca', 'notice notice-success', sprintf( __( 'Marketing 360® Payments is now ready for Strong Customer Authentication (SCA) and 3D Secure 2! <a href="%1$s" target="_blank">Read about SCA</a>', 'marketing-360-payments-for-woocommerce' ), 'https://woocommerce.com/posts/introducing-strong-customer-authentication-sca/' ), true );
 			}
 		}
@@ -183,12 +184,12 @@ class WC_Stripe_Admin_Notices {
 	 */
 	public function hide_notices() {
 		if ( isset( $_GET['wc-stripe-hide-notice'] ) && isset( $_GET['_wc_stripe_notice_nonce'] ) ) {
-			if ( ! wp_verify_nonce( $_GET['_wc_stripe_notice_nonce'], 'wc_stripe_hide_notices_nonce' ) ) {
-				wp_die( __( 'Action failed. Please refresh the page and retry.', 'marketing-360-payments-for-woocommerce' ) );
+			if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wc_stripe_notice_nonce'] ) ), 'wc_stripe_hide_notices_nonce' ) ) {
+				wp_die( esc_html__( 'Action failed. Please refresh the page and retry.', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			if ( ! current_user_can( 'manage_woocommerce' ) ) {
-				wp_die( __( 'Cheatin&#8217; huh?', 'marketing-360-payments-for-woocommerce' ) );
+				wp_die( esc_html__( 'Cheatin&#8217; huh?', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			$notice = wc_clean( $_GET['wc-stripe-hide-notice'] );

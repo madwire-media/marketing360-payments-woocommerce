@@ -266,20 +266,27 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         ob_start(); ?>
 			<tr valign="top">
 				<th scope="row" class="titledesc">
-					<label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo $this->get_tooltip_html($data); // WPCS: XSS ok.?></label>
+					<label for="<?php echo esc_attr($field_key); ?>"><?php echo wp_kses_post($data['title']); ?> <?php echo wp_kses_post($this->get_tooltip_html($data)); ?></label>
 				</th>
 				<td class="forminp">
 					<?php
                         $details = json_decode($this->get_option($key));
-        $button_text = ($details) ? 'Connect to a different Marketing 360® account' : 'Connect to your Marketing 360® account';
+        $button_text = ($details) ? __('Connect to a different Marketing 360® account', 'marketing-360-payments-for-woocommerce') : __('Connect to your Marketing 360® account', 'marketing-360-payments-for-woocommerce');
         ?>
 		            <div id="wc-m360-notice-box">
 		                <?php if ($details): ?>
-		                    <p><?php echo __("Currently connected to Marketing 360® account: {$details->externalAccountNumber} {$details->displayName}. <a href=\"#\" onclick=\"m360SignOut()\">Disconnect Account</a>", 'marketing-360-payments-for-woocommerce'); ?></p>
+		                    <p><?php
+                            printf(
+                                /* translators: 1: Marketing 360 account number, 2: account display name. */
+                                esc_html__('Currently connected to Marketing 360® account: %1$s %2$s.', 'marketing-360-payments-for-woocommerce'),
+                                esc_html($details->externalAccountNumber),
+                                esc_html($details->displayName)
+                            );
+                            ?> <a href="#" onclick="m360SignOut()"><?php esc_html_e('Disconnect Account', 'marketing-360-payments-for-woocommerce'); ?></a></p>
 		                <?php endif; ?>
 		            </div>
 		            <button id="wc-m360-api-auth" class="button-secondary">
-		                <?php echo esc_html(__($button_text, 'marketing-360-payments-for-woocommerce')); ?>
+		                <?php echo esc_html($button_text); ?>
 		            </button>
 		            <style>
 		                #wc-m360-notice-box p {
@@ -336,7 +343,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
         $description = trim($description);
 
-        echo apply_filters('wc_stripe_description', wpautop(wp_kses_post($description)), $this->id); // wpcs: xss ok.
+        echo wp_kses_post(apply_filters('wc_stripe_description', wpautop(wp_kses_post($description)), $this->id));
 
         if ($display_tokenization) {
             $this->tokenization_script();
@@ -431,9 +438,9 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         wp_enqueue_script('woocommerce_stripe_admin', plugins_url('assets/js/stripe-admin' . $suffix . '.js', WC_M360_PAYMENTS_MAIN_FILE), array(), WC_M360_PAYMENTS_VERSION, true);
 
         ob_start(); ?>
-			connectUrl 		= "<?php echo get_rest_url(null, 'wc_marketing_360_payments/' . Marketing_360_Payments::VER . '/sign_in'); ?>";
-            nonce 			= "<?php echo wp_create_nonce('wp_rest'); ?>";
-        	stripeKey 		= "<?php echo $this->publishable_key; ?>";
+			connectUrl 		= "<?php echo esc_js(esc_url_raw(get_rest_url(null, 'wc_marketing_360_payments/' . Marketing_360_Payments::VER . '/sign_in'))); ?>";
+            nonce 			= "<?php echo esc_js(wp_create_nonce('wp_rest')); ?>";
+        	stripeKey 		= "<?php echo esc_js($this->publishable_key); ?>";
 		<?php wp_add_inline_script('woocommerce_stripe_admin', ob_get_clean(), 'before');
 
         wp_enqueue_style('woocommerce_stripe_admin', plugins_url('assets/css/admin' . $suffix . '.css', WC_M360_PAYMENTS_MAIN_FILE), array(), WC_M360_PAYMENTS_VERSION);
@@ -443,14 +450,6 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     public function render_signin_popup()
     {
         global $current_section;
-        // $data = get_userdata( get_current_user_id() );
-
-        // if ( is_object( $data) ) {
-        //     $current_user_caps = $data->allcaps;
-
-        //     // print it to the screen
-        //     echo '<pre>' . print_r( $current_user_caps, true ) . '</pre>';
-        // }
         if ($current_section == $this->id) {
             require_once(WC_M360_PAYMENTS_PLUGIN_PATH . '/marketing360-login-page.php');
         }
@@ -586,7 +585,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         }
 
         $localized_message = __('Sorry, we\'re not accepting prepaid cards at this time. Your credit card has not been charged. Please try with alternative payment method.', 'marketing-360-payments-for-woocommerce');
-        throw new WC_Stripe_Exception(print_r($prepared_source->source_object, true), $localized_message);
+        throw new WC_Stripe_Exception(esc_html( wc_print_r( $prepared_source->source_object, true ) ), esc_html( $localized_message ));
     }
 
     /**
@@ -600,7 +599,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     {
         if (empty($prepared_source->source)) {
             $localized_message = __('Payment processing failed. Please retry. Source Failed.', 'marketing-360-payments-for-woocommerce');
-            throw new WC_Stripe_Exception(print_r($prepared_source, true), $localized_message);
+            throw new WC_Stripe_Exception(esc_html( wc_print_r( $prepared_source, true ) ), esc_html( $localized_message ));
         }
     }
 
@@ -830,12 +829,12 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
 		<tr>
 			<td class="label stripe-fee">
-				<?php echo wc_help_tip(__('This represents the fee Marketing 360® Payments collects for the transaction.', 'marketing-360-payments-for-woocommerce')); // wpcs: xss ok.?>
+				<?php echo wp_kses_post(wc_help_tip(__('This represents the fee Marketing 360® Payments collects for the transaction.', 'marketing-360-payments-for-woocommerce'))); ?>
 				<?php esc_html_e('Marketing 360® Payments Fee:', 'marketing-360-payments-for-woocommerce'); ?>
 			</td>
 			<td width="1%"></td>
 			<td class="total">
-				-&nbsp;<?php echo wc_price($fee, array( 'currency' => $currency )); // wpcs: xss ok.?>
+				-&nbsp;<?php echo wp_kses_post(wc_price($fee, array( 'currency' => $currency ))); ?>
 			</td>
 		</tr>
 
@@ -868,12 +867,12 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
 		<tr>
 			<td class="label stripe-payout">
-				<?php echo wc_help_tip(__('This represents the net total that will be credited to your bank account. This may be in the currency that is set in your Marketing 360® Payments account.', 'marketing-360-payments-for-woocommerce')); // wpcs: xss ok.?>
+				<?php echo wp_kses_post(wc_help_tip(__('This represents the net total that will be credited to your bank account. This may be in the currency that is set in your Marketing 360® Payments account.', 'marketing-360-payments-for-woocommerce'))); ?>
 				<?php esc_html_e('Marketing 360® Payments Payout:', 'marketing-360-payments-for-woocommerce'); ?>
 			</td>
 			<td width="1%"></td>
 			<td class="total">
-				<?php echo wc_price($net, array( 'currency' => $currency )); // wpcs: xss ok.?>
+				<?php echo wp_kses_post(wc_price($net, array( 'currency' => $currency ))); ?>
 			</td>
 		</tr>
 
@@ -916,7 +915,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
         $order->add_order_note($localized_message);
 
-        throw new WC_Stripe_Exception(print_r($response, true), $localized_message);
+        throw new WC_Stripe_Exception(esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ));
     }
 
     /**
@@ -937,7 +936,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         if (! $retry) {
             $localized_message = __('Sorry, we are unable to process your payment at this time. Please retry later.', 'marketing-360-payments-for-woocommerce');
             $order->add_order_note($localized_message);
-            throw new WC_Stripe_Exception(print_r($response, true), $localized_message); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.
+            throw new WC_Stripe_Exception(esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message )); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.
         }
 
         // Don't do anymore retries after this.
@@ -1009,7 +1008,8 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
         $intent = $this->get_intent_from_order($order);
 
         if (! $intent) {
-            throw new WC_Stripe_Exception('Payment Intent not found', __('Payment Intent not found for order #' . $order->get_id(), 'marketing-360-payments-for-woocommerce'));
+            /* translators: %s: order number. */
+            throw new WC_Stripe_Exception('Payment Intent not found', esc_html( sprintf(esc_html__('Payment Intent not found for order #%s', 'marketing-360-payments-for-woocommerce'), esc_html($order->get_id())) ));
         }
 
         if ('requires_payment_method' === $intent->status && isset($intent->last_payment_error)
@@ -1025,7 +1025,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
             );
 
             if (isset($intent->error)) {
-                throw new WC_Stripe_Exception(print_r($intent, true), $intent->error->message);
+                throw new WC_Stripe_Exception(esc_html( wc_print_r( $intent, true ) ), esc_html( $intent->error->message ));
             }
         }
 
@@ -1286,21 +1286,21 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
 
     public function validate_m360_account_field( $key, $value ) {
         if( empty( $value ) ) {
-            throw new Exception( __( 'Missing Marketing 360 Account', 'marketing-360-payments-for-woocommerce' ) );
+            throw new Exception( esc_html__( 'Missing Marketing 360 Account', 'marketing-360-payments-for-woocommerce' ) );
         }
         return $value;
     }
 
     public function validate_client_id_field( $key, $value ) {
         if( empty( $value ) ) {
-            throw new Exception( __( 'Missing Marketing 360 Client ID', 'marketing-360-payments-for-woocommerce' ) );
+            throw new Exception( esc_html__( 'Missing Marketing 360 Client ID', 'marketing-360-payments-for-woocommerce' ) );
         }
         return $value;
     }
 
     public function validate_client_secret_field( $key, $value ) {
         if( empty( $value ) ) {
-            throw new Exception( __( 'Missing Marketing 360 Client Secret', 'marketing-360-payments-for-woocommerce' ) );
+            throw new Exception( esc_html__( 'Missing Marketing 360 Client Secret', 'marketing-360-payments-for-woocommerce' ) );
         }
         return $value;
     }
@@ -1308,7 +1308,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     public function validate_publishable_key_field( $key, $value ) {
         $value = $this->validate_text_field( $key, $value );
         if ( ! empty( $value ) && ! preg_match( '/^pk_live_/', $value ) ) {
-            throw new Exception( __( 'The "Live Publishable Key" should start with "pk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+            throw new Exception( esc_html__( 'The "Live Publishable Key" should start with "pk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
         }
         return $value;
     }
@@ -1316,7 +1316,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     public function validate_secret_key_field( $key, $value ) {
         $value = $this->validate_text_field( $key, $value );
         if ( ! empty( $value ) && ! preg_match( '/^[rs]k_live_/', $value ) ) {
-            throw new Exception( __( 'The "Live Secret Key" should start with "sk_live" or "rk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+            throw new Exception( esc_html__( 'The "Live Secret Key" should start with "sk_live" or "rk_live", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
         }
         return $value;
     }
@@ -1324,7 +1324,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     public function validate_test_publishable_key_field( $key, $value ) {
         $value = $this->validate_text_field( $key, $value );
         if ( ! empty( $value ) && ! preg_match( '/^pk_test_/', $value ) ) {
-            throw new Exception( __( 'The "Test Publishable Key" should start with "pk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+            throw new Exception( esc_html__( 'The "Test Publishable Key" should start with "pk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
         }
         return $value;
     }
@@ -1332,7 +1332,7 @@ class WC_Gateway_Stripe extends WC_Stripe_Payment_Gateway
     public function validate_test_secret_key_field( $key, $value ) {
         $value = $this->validate_text_field( $key, $value );
         if ( ! empty( $value ) && ! preg_match( '/^[rs]k_test_/', $value ) ) {
-            throw new Exception( __( 'The "Test Secret Key" should start with "sk_test" or "rk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
+            throw new Exception( esc_html__( 'The "Test Secret Key" should start with "sk_test" or "rk_test", enter the correct key.', 'marketing-360-payments-for-woocommerce' ) );
         }
         return $value;
     }
