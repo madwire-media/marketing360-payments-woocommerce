@@ -329,7 +329,7 @@ class WC_Stripe_Apple_Pay_Registration {
 		$verification_complete = $this->register_domain_with_apple( $secret_key );
 
 		// Show/hide notes if necessary.
-		WC_Stripe_Inbox_Notes::notify_on_apple_pay_domain_verification( $verification_complete );
+		if ( class_exists( 'WC_Stripe_Inbox_Notes' ) ) { WC_Stripe_Inbox_Notes::notify_on_apple_pay_domain_verification( $verification_complete ); }
 	}
 
 	/**
