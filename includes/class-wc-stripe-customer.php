@@ -118,7 +118,7 @@ class WC_Stripe_Customer {
 			}
 
 			// translators: %1$s First name, %2$s Second name, %3$s Username.
-			$description = sprintf( __( 'Name: %1$s %2$s, Username: %s', 'marketing-360-payments-for-woocommerce' ), $billing_first_name, $billing_last_name, $user->user_login );
+			$description = sprintf( __( 'Name: %1$s %2$s, Username: %3$s', 'marketing-360-payments-for-woocommerce' ), $billing_first_name, $billing_last_name, $user->user_login );
 
 			$defaults = array(
 				'email'       => $user->user_email,
@@ -153,7 +153,7 @@ class WC_Stripe_Customer {
 		$response = WC_Stripe_API::request( apply_filters( 'wc_stripe_create_customer_args', $args ), 'customers' );
 
 		if ( ! empty( $response->error ) ) {
-			throw new WC_Stripe_Exception( print_r( $response, true ), $response->error->message );
+			throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $response->error->message ) );
 		}
 
 		$this->set_id( $response->id );
@@ -181,7 +181,7 @@ class WC_Stripe_Customer {
 	 */
 	public function update_customer( $args = array(), $is_retry = false ) {
 		if ( empty( $this->get_id() ) ) {
-			throw new WC_Stripe_Exception( 'id_required_to_update_user', __( 'Attempting to update a Stripe customer without a customer ID.', 'marketing-360-payments-for-woocommerce' ) );
+			throw new WC_Stripe_Exception( 'id_required_to_update_user', esc_html__( 'Attempting to update a Stripe customer without a customer ID.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		$args     = $this->generate_customer_request( $args );
@@ -196,7 +196,7 @@ class WC_Stripe_Customer {
 				return $this->update_customer( $args, true );
 			}
 
-			throw new WC_Stripe_Exception( print_r( $response, true ), $response->error->message );
+			throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $response->error->message ) );
 		}
 
 		$this->clear_cache();

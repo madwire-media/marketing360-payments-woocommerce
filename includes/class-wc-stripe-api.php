@@ -112,7 +112,7 @@ class WC_Stripe_API
      */
     public static function request($request, $api = 'charges', $method = 'POST', $with_headers = false)
     {
-        WC_Stripe_Logger::log("{$api} request: " . print_r($request, true));
+        WC_Stripe_Logger::log("{$api} request: " . wc_print_r( $request, true ));
 
         $headers         = self::get_headers();
         $idempotency_key = '';
@@ -137,7 +137,7 @@ class WC_Stripe_API
 
         if (is_wp_error($response) || empty($response['body'])) {
             WC_Stripe_Logger::log(
-                'Error Response: ' . print_r($response, true) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(
+                'Error Response: ' . wc_print_r( $response, true ) . PHP_EOL . PHP_EOL . 'Failed request: ' . wc_print_r(
                     array(
                         'api'             => $api,
                         'request'         => $request,
@@ -147,7 +147,7 @@ class WC_Stripe_API
                 )
             );
 
-            throw new WC_Stripe_Exception(print_r($response, true), __('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
+            throw new WC_Stripe_Exception(esc_html( wc_print_r( $response, true ) ), esc_html__('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
         }
 
         if ($with_headers) {
@@ -181,7 +181,7 @@ class WC_Stripe_API
         );
 
         if (is_wp_error($response) || empty($response['body'])) {
-            WC_Stripe_Logger::log('Error Response: ' . print_r($response, true));
+            WC_Stripe_Logger::log('Error Response: ' . wc_print_r( $response, true ));
             return new WP_Error('stripe_error', __('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
         }
 
@@ -253,13 +253,13 @@ class WC_Stripe_API
             // Log the issue so we could debug it.
             WC_Stripe_Logger::log(
                 'Level3 data sum incorrect: ' . PHP_EOL
-                . print_r($result->error->message, true) . PHP_EOL
-                . print_r('Order line items: ', true) . PHP_EOL
-                . print_r($order->get_items(), true) . PHP_EOL
-                . print_r('Order shipping amount: ', true) . PHP_EOL
-                . print_r($order->get_shipping_total(), true) . PHP_EOL
-                . print_r('Order currency: ', true) . PHP_EOL
-                . print_r($order->get_currency(), true)
+                . wc_print_r( $result->error->message, true ) . PHP_EOL
+                . 'Order line items: ' . PHP_EOL
+                . wc_print_r( $order->get_items(), true ) . PHP_EOL
+                . 'Order shipping amount: ' . PHP_EOL
+                . wc_print_r( $order->get_shipping_total(), true ) . PHP_EOL
+                . 'Order currency: ' . PHP_EOL
+                . wc_print_r( $order->get_currency(), true )
             );
         }
 
@@ -289,7 +289,7 @@ class WC_Stripe_API
      */
     public static function registerApplePaySubdomain($request, $api = 'charges', $method = 'POST', $with_headers = false)
     {
-        WC_Stripe_Logger::log("{$api} registerApplePaySubdomain: " . print_r($request, true));
+        WC_Stripe_Logger::log("{$api} registerApplePaySubdomain: " . wc_print_r( $request, true ));
 
         $headers         = self::get_headers();
         $idempotency_key = '';
@@ -314,7 +314,7 @@ class WC_Stripe_API
 
         if (is_wp_error($response) || empty($response['body'])) {
             WC_Stripe_Logger::log(
-                'Error Response: ' . print_r($response, true) . PHP_EOL . PHP_EOL . 'Failed request: ' . print_r(
+                'Error Response: ' . wc_print_r( $response, true ) . PHP_EOL . PHP_EOL . 'Failed request: ' . wc_print_r(
                     array(
                         'api'             => $api,
                         'request'         => $request,
@@ -324,7 +324,7 @@ class WC_Stripe_API
                 )
             );
 
-            throw new WC_Stripe_Exception(print_r($response, true), __('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
+            throw new WC_Stripe_Exception(esc_html( wc_print_r( $response, true ) ), esc_html__('There was a problem connecting to the Marketing 360® Payments API endpoint.', 'marketing-360-payments-for-woocommerce'));
         }
 
         if ($with_headers) {

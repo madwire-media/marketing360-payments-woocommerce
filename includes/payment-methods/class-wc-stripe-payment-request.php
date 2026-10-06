@@ -610,7 +610,7 @@ class WC_Stripe_Payment_Request
                         $label = esc_html($this->get_button_label());
                         $class_name = esc_attr('button ' .  $this->get_button_theme());
                         $style = esc_attr('height:' . $this->get_button_height() . 'px;');
-                        echo "<button id=\"wc-stripe-custom-button\" class=\"$class_name\" style=\"$style\"> $label </button>";
+                        printf('<button id="wc-stripe-custom-button" class="%1$s" style="%2$s"> %3$s </button>', esc_attr($class_name), esc_attr($style), esc_html($label));
                     }
         ?>
 				<!-- A Stripe Element will be inserted here. -->
@@ -830,7 +830,7 @@ class WC_Stripe_Payment_Request
             if (! empty($packages) && WC()->customer->has_calculated_shipping()) {
                 foreach ($packages as $package_key => $package) {
                     if (empty($package['rates'])) {
-                        throw new Exception(__('Unable to find shipping method for address.', 'marketing-360-payments-for-woocommerce'));
+                        throw new Exception(esc_html__('Unable to find shipping method for address.', 'marketing-360-payments-for-woocommerce'));
                     }
 
                     foreach ($package['rates'] as $key => $rate) {
@@ -843,7 +843,7 @@ class WC_Stripe_Payment_Request
                     }
                 }
             } else {
-                throw new Exception(__('Unable to find shipping method for address.', 'marketing-360-payments-for-woocommerce'));
+                throw new Exception(esc_html__('Unable to find shipping method for address.', 'marketing-360-payments-for-woocommerce'));
             }
 
             // The first shipping option is automatically applied on the client.
@@ -945,7 +945,8 @@ class WC_Stripe_Payment_Request
             $variation_id = null;
 
             if (! is_a($product, 'WC_Product')) {
-                throw new Exception(sprintf(__('Product with the ID (%d) cannot be found.', 'marketing-360-payments-for-woocommerce'), $product_id));
+                /* translators: %d: product ID. */
+                throw new Exception(esc_html( sprintf(__('Product with the ID (%d) cannot be found.', 'marketing-360-payments-for-woocommerce'), $product_id) ));
             }
 
             if ('variable' === $product->get_type() && isset($_POST['attributes'])) {
@@ -966,7 +967,7 @@ class WC_Stripe_Payment_Request
 
             if (! $product->has_enough_stock($qty)) {
                 /* translators: 1: product name 2: quantity in stock */
-                throw new Exception(sprintf(__('You cannot add that amount of "%1$s"; to the cart because there is not enough stock (%2$s remaining).', 'marketing-360-payments-for-woocommerce'), $product->get_name(), wc_format_stock_quantity_for_display($product->get_stock_quantity(), $product)));
+                throw new Exception(esc_html( sprintf(__('You cannot add that amount of "%1$s"; to the cart because there is not enough stock (%2$s remaining).', 'marketing-360-payments-for-woocommerce'), $product->get_name(), wc_format_stock_quantity_for_display($product->get_stock_quantity(), $product)) ));
             }
 
             $total = $qty * $product->get_price() + $addon_value;

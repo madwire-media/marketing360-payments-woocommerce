@@ -220,7 +220,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	public function validate_minimum_order_amount( $order ) {
 		if ( $order->get_total() * 100 < WC_Stripe_Helper::get_minimum_amount() ) {
 			/* translators: 1) dollar amount */
-			throw new WC_Stripe_Exception( 'Did not meet minimum amount', sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'marketing-360-payments-for-woocommerce' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) ) );
+			throw new WC_Stripe_Exception( 'Did not meet minimum amount', wp_kses_post( sprintf( __( 'Sorry, the minimum allowed order total is %1$s to use this payment method.', 'marketing-360-payments-for-woocommerce' ), wc_price( WC_Stripe_Helper::get_minimum_amount() / 100 ) ) ) );
 		}
 	}
 
@@ -376,7 +376,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 * Store extra meta data for an order from a Stripe Response.
 	 */
 	public function process_response( $response, $order ) {
-		WC_Stripe_Logger::log( 'Processing response: ' . print_r( $response, true ) );
+		WC_Stripe_Logger::log( 'Processing response: ' . wc_print_r( $response, true ) );
 
 		$order_id = $order->get_id();
 		$captured = ( isset( $response->captured ) && $response->captured ) ? 'yes' : 'no';
@@ -417,7 +417,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 			if ( 'failed' === $response->status ) {
 				$localized_message = __( 'Payment processing failed. Please retry.', 'marketing-360-payments-for-woocommerce' );
 				$order->add_order_note( $localized_message );
-				throw new WC_Stripe_Exception( print_r( $response, true ), $localized_message );
+				throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $localized_message ) );
 			}
 		} else {
 			$order->set_transaction_id( $response->id );
@@ -508,7 +508,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		$source_object = WC_Stripe_API::retrieve( 'sources/' . $source_id );
 
 		if ( ! empty( $source_object->error ) ) {
-			throw new WC_Stripe_Exception( print_r( $source_object, true ), $source_object->error->message );
+			throw new WC_Stripe_Exception( esc_html( wc_print_r( $source_object, true ) ), esc_html( $source_object->error->message ) );
 		}
 
 		return $source_object;
@@ -595,7 +595,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 				$response = $customer->add_source( $source_object->id );
 
 				if ( ! empty( $response->error ) ) {
-					throw new WC_Stripe_Exception( print_r( $response, true ), $this->get_localized_error_message_from_response( $response ) );
+					throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $this->get_localized_error_message_from_response( $response ) ) );
 				}
 			}
 		} elseif ( $this->is_using_saved_payment_method() ) {
@@ -605,7 +605,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 
 			if ( ! $wc_token || $wc_token->get_user_id() !== get_current_user_id() ) {
 				WC()->session->set( 'refresh_totals', true );
-				throw new WC_Stripe_Exception( 'Invalid payment method', __( 'Invalid payment method. Please input a new card number.', 'marketing-360-payments-for-woocommerce' ) );
+				throw new WC_Stripe_Exception( 'Invalid payment method', esc_html__( 'Invalid payment method. Please input a new card number.', 'marketing-360-payments-for-woocommerce' ) );
 			}
 
 			$source_id = $wc_token->get_token();
@@ -622,7 +622,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 				$response = $customer->add_source( $stripe_token );
 
 				if ( ! empty( $response->error ) ) {
-					throw new WC_Stripe_Exception( print_r( $response, true ), $response->error->message );
+					throw new WC_Stripe_Exception( esc_html( wc_print_r( $response, true ) ), esc_html( $response->error->message ) );
 				}
 				$source_id    = $response;
 			} else {
@@ -1237,13 +1237,13 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	private function get_intent( $intent_type, $intent_id ) {
 		if ( ! in_array( $intent_type, [ 'payment_intents', 'setup_intents' ] ) ) {
-			throw new Exception( "Failed to get intent of type $intent_type. Type is not allowed" );
+			throw new Exception( esc_html( sprintf( 'Failed to get intent of type %s. Type is not allowed', $intent_type ) ) );
 		}
 
 		$response = WC_Stripe_API::request( array(), "$intent_type/$intent_id", 'GET' );
 
 		if ( $response && isset( $response->{ 'error' } ) ) {
-			$error_response_message = print_r( $response, true );
+			$error_response_message = wc_print_r( $response, true );
 			WC_Stripe_Logger::log("Failed to get Marketing 360® Payments intent $intent_type/$intent_id.");
 			WC_Stripe_Logger::log("Response: $error_response_message");
 			return false;
@@ -1315,7 +1315,7 @@ abstract class WC_Stripe_Payment_Gateway extends WC_Payment_Gateway_CC {
 		), 'setup_intents' );
 
 		if ( is_wp_error( $setup_intent ) ) {
-			WC_Stripe_Logger::log( "Unable to create SetupIntent for Order #$order_id: " . print_r( $setup_intent, true ) );
+			WC_Stripe_Logger::log( "Unable to create SetupIntent for Order #$order_id: " . wc_print_r( $setup_intent, true ) );
 		} elseif ( 'requires_action' === $setup_intent->status ) {
 			$order->update_meta_data( '_stripe_setup_intent', $setup_intent->id );
 			$order->save();

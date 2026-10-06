@@ -55,7 +55,7 @@ class WC_Stripe_Intent_Controller {
 	 */
 	protected function get_order_from_request() {
 		if ( ! isset( $_GET['nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['nonce'] ) ), 'wc_stripe_confirm_pi' ) ) {
-			throw new WC_Stripe_Exception( 'missing-nonce', __( 'CSRF verification failed.', 'marketing-360-payments-for-woocommerce' ) );
+			throw new WC_Stripe_Exception( 'missing-nonce', esc_html__( 'CSRF verification failed.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		$order_id  = isset( $_GET['order'] ) ? absint( wp_unslash( $_GET['order'] ) ) : 0;
@@ -64,19 +64,19 @@ class WC_Stripe_Intent_Controller {
 		$order = $order_id ? wc_get_order( $order_id ) : false;
 
 		if ( ! $order ) {
-			throw new WC_Stripe_Exception( 'missing-order', __( 'Missing order ID for payment confirmation', 'marketing-360-payments-for-woocommerce' ) );
+			throw new WC_Stripe_Exception( 'missing-order', esc_html__( 'Missing order ID for payment confirmation', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		// Bind the request to the order: the order ID alone is a guessable selector,
 		// so the caller must also present the order's secret key.
 		if ( '' === $order_key || ! $order->key_is_valid( $order_key ) ) {
-			throw new WC_Stripe_Exception( 'invalid-order-key', __( 'Unable to verify payment for this order.', 'marketing-360-payments-for-woocommerce' ) );
+			throw new WC_Stripe_Exception( 'invalid-order-key', esc_html__( 'Unable to verify payment for this order.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		// If the order belongs to a registered customer, only that customer may verify it.
 		$customer_id = (int) $order->get_customer_id();
 		if ( $customer_id > 0 && get_current_user_id() !== $customer_id ) {
-			throw new WC_Stripe_Exception( 'order-owner-mismatch', __( 'Unable to verify payment for this order.', 'marketing-360-payments-for-woocommerce' ) );
+			throw new WC_Stripe_Exception( 'order-owner-mismatch', esc_html__( 'Unable to verify payment for this order.', 'marketing-360-payments-for-woocommerce' ) );
 		}
 
 		return $order;

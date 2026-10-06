@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 <div id="wc-m360-signin-popup-wrap" style="display:none !important">
     <div id="wc-m360-signin-popup">
         <header class="wc-m360-signin-popup-header">
